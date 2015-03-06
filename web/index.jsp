@@ -11,6 +11,15 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            th, td{
+                padding: 5px;
+            }
+        </style>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Selecting Specific Data from a DB</title>
     </head>
@@ -19,43 +28,79 @@
         
         <%
             Connection con = null; 
-            PreparedStatement pst = null; 
-            ResultSet rs = null;
+            PreparedStatement pst1 = null;
+            PreparedStatement pst2 = null;
+            PreparedStatement pst3 = null; 
+            ResultSet rs1 = null;
+            ResultSet rs2 = null;
+            ResultSet rs3 = null;
             
                 try{
                     con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw");
 
-                    pst = con.prepareStatement(
-                        "SELECT id, language from languages");
+                    //languages
+                    pst1 = con.prepareStatement(
+                        "SELECT * from languages");
                     
-                    rs = pst.executeQuery();
+                    //categories
+                    pst2 = con.prepareStatement(
+                        "SELECT * from categories");
                     
-                }
-                catch(SQLException e){
-                    e.printStackTrace();
-                }
-        
+                    //contexts
+                    pst3 = con.prepareStatement(
+                        "SELECT * from context");
+                    
+                    rs1 = pst1.executeQuery();
+                    rs2 = pst2.executeQuery();
+                    rs3 = pst3.executeQuery();
+              
         %>
                 
         
         <form name="selForm" action="display.jsp" method="POST">
-            <table border="1">
-                <thead>
+            <table style:="width:100%">
                     <tr>
-                        <th>Query</th>
+                        <th>Language</th>
+                        <th>Category</th>
+                        <th>Context</th>                      
                     </tr>
-                </thead>
-                <tbody>
                     <tr>
-                        <td>LANGUAGE</td>
                        <td><select name="language_id">
-                               <% while(rs.next()){%>
-                               <option value="<%= rs.getInt(1)%>"><%= rs.getString(2)%></option>
+                               <% while(rs1.next()){%>
+                               <option value="<%= rs1.getInt(1)%>"><%= rs1.getString(2)%></option>
                                <% } %>
-                           </select></td>
+                           </select>
+                       </td>
+                    
+                       <td><select name="category_id">
+                               <% while(rs2.next()){%>
+                               <option value="<%= rs2.getInt(1)%>"><%= rs2.getString(2)%></option>
+                               <% } %>
+                           </select>
+                       </td>
+                    
+                       <td><select name="language_id">
+                               <% while(rs3.next()){%>
+                               <option value="<%= rs3.getInt(1)%>"><%= rs3.getString(2)%></option>
+                               <% } %>
+                           </select>
+                       </td>
                     </tr>
-                </tbody>
             </table>
+            <%      
+                }
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+                finally{
+                    if(rs1!=null) try{rs1.close();}catch(Exception e){}
+                    if(rs2!=null) try{rs1.close();}catch(Exception e){}
+                    if(rs3!=null) try{rs1.close();}catch(Exception e){}
+                    
+                }
+        %>               
+                           
+                           
             <input type="reset" value="Reset" name="reset" />
             <input type="submit" value="Submit" name="submit" />
         </form>
