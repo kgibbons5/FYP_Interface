@@ -25,11 +25,7 @@
             
             public Translate(){
                 try{
-                    con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw");
-
-                    pst = con.prepareStatement(
-                            "SELECT id, language FROM languages WHERE id = ?");
-                    
+                    con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw"); 
                 }
                 catch(SQLException e){
                     e.printStackTrace();
@@ -37,48 +33,53 @@
             }
             
             
-            public ResultSet getTranslation(int id){
-                
+            public long getTermID(String term, int src_lang_id){
+                long x=0;
                 try{
-                    
-                    pst.setInt(1, id);
+                    con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw"); 
+                    pst = con.prepareStatement("Select id from terms where term like ? and language_id= ?");
+                    pst.setString(1, term);
+                    pst.setInt(2, src_lang_id);
                     rs = pst.executeQuery();
+                    
+                    while(rs.next()){
+                        x=(long)rs.getInt(1);
+                    }
+                    rs.close();
+                    pst.close();
+                    
                 }
                 catch(SQLException e){
                     e.printStackTrace();
                 }
-                return rs;
+                return x;
             }
         }
           
         %>
         <%
-            int l_id=0;
+            String src_term = new String();
+            int src_lang=0;
+            
+            if(request.getParameter("source_term") != null){
+                src_term = request.getParameter("source_term");
+            }
             
             if(request.getParameter("source_language") != null){
-                l_id = Integer.parseInt(request.getParameter("source_language"));
+                src_lang =  Integer.parseInt(request.getParameter("source_language"));
             }
 
-            Translate translation = new Translate();
-            ResultSet rs_trans = translation.getTranslation(l_id);
+            out.println("Parameter contains " +src_term);
+            out.println("Parameter contains " +src_lang);
+            Translate t = new Translate();
+            long id = t.getTermID(src_term, src_lang);
+            out.println("id is " +id);
+            
+            
+            
             
         %>
-        
-        <table border="1">
-           
-            <tbody>
-                <tr>
-                    <td>Language id:</td>
-                    <td>Language: </td>
-                </tr>
-                <% while (rs_trans.next()) {%>
-                <tr>
-                    <td><%= rs_trans.getInt("id")%></td>
-                    <td><%= rs_trans.getString("language")%></td>
-                </tr>
-                <% } %>
-            </tbody>
-        </table>
+ 
 
         
     </body>
