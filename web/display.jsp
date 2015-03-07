@@ -16,14 +16,14 @@
     <body>
         <h1>Selecting Specific Data from a DB</h1>
         <%!
-         public class Lang {
+         public class Translate {
             
             Connection con = null; 
             PreparedStatement pst = null; 
             ResultSet rs = null;
             
             
-            public Lang(){
+            public Translate(){
                 try{
                     con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw");
 
@@ -37,7 +37,7 @@
             }
             
             
-            public ResultSet getLang(int id){
+            public ResultSet getTranslation(int id){
                 
                 try{
                     
@@ -55,12 +55,12 @@
         <%
             int l_id=0;
             
-            if(request.getParameter("language_id") != null){
-                l_id = Integer.parseInt(request.getParameter("language_id"));
+            if(request.getParameter("source_language") != null){
+                l_id = Integer.parseInt(request.getParameter("source_language"));
             }
 
-            Lang lang = new Lang();
-            ResultSet rs_lang = lang.getLang(l_id);
+            Translate translation = new Translate();
+            ResultSet rs_trans = translation.getTranslation(l_id);
             
         %>
         
@@ -71,10 +71,10 @@
                     <td>Language id:</td>
                     <td>Language: </td>
                 </tr>
-                <% while (rs_lang.next()) {%>
+                <% while (rs_trans.next()) {%>
                 <tr>
-                    <td><%= rs_lang.getInt("id")%></td>
-                    <td><%= rs_lang.getString("language")%></td>
+                    <td><%= rs_trans.getInt("id")%></td>
+                    <td><%= rs_trans.getString("language")%></td>
                 </tr>
                 <% } %>
             </tbody>
