@@ -34,13 +34,14 @@
             }
             
             
-            public long getTermID(String term, int src_lang_id){
+            public long getTermID(long src_lang_id,String term){
                 long x=0;
                 try{
                   //con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw"); 
-                    pst = con.prepareStatement("Select id from terms where term like ? and language_id= ?");
-                    pst.setString(1, term);
-                    pst.setInt(2, src_lang_id);
+                    pst = con.prepareStatement("Select id from terms where language_id= ? and term like ?");
+                    pst.setLong(1, src_lang_id);
+                    pst.setString(2, term);
+                    
                     rs = pst.executeQuery();
                     
                     while(rs.next()){
@@ -88,7 +89,7 @@
             out.println("Source term is " +src_term);
             out.println("\nSource language id is " +src_lang);
             Translate t = new Translate();
-            long id = t.getTermID(src_term, src_lang);
+            long id = t.getTermID(src_lang,src_term);
             out.println("\nid is " +id);
             ResultSet rs_trans_ids = t.getTranslationID(id);
             
