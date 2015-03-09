@@ -61,7 +61,7 @@
             public ResultSet getTranslationID(long src_term_id,long targ_lang){
                 
                 try{
-                    pst = con.prepareStatement("Select * from translations left join terms on translations.targ_term_id = terms.id  where (src_term_id = ? or targ_term_id= ?) and terms.language_id= ?");
+                    pst = con.prepareStatement("Select * from translations left join terms on (translations.src_term_id = terms.id or translations.targ_term_id = terms.id )  where (src_term_id = ? or targ_term_id= ?) and terms.language_id= ?");
                     pst.setLong(1, src_term_id);
                     pst.setLong(2, src_term_id);
                     pst.setLong(3, targ_lang);
@@ -81,6 +81,8 @@
             String src_term = new String();
             long src_lang=0;
             long targ_lang=0;
+            long source_id=0;
+            long target_id=0;
             
             if(request.getParameter("source_term") != null){
                 src_term = request.getParameter("source_term");
@@ -101,12 +103,22 @@
             long id = t.getTermID(src_lang,src_term);
             out.println("\nid is " +id);
             ResultSet rs_trans_ids = t.getTranslationID(id,targ_lang);
+ 
+            while(rs_trans_ids.next())
+            {
+                source_id = rs_trans_ids.getLong("src_term_id");
+                target_id = rs_trans_ids.getLong("targ_term_id");
+            }
             
-//            while(rs_trans_ids.next())
-//            {
-//                long trans_ids = rs_trans_ids.getLong("targ_term_id");
-//                out.println("\ntrans_ids " +trans_ids);
-//            }
+            if(source_id==id)
+            {
+                //want the target
+                out.println(" source | translates to:" +target_id);
+            }
+            else{
+                out.println(" target | translates to:" +source_id);
+            }
+            
             %>
             <table border="1">
             <tbody>
