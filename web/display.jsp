@@ -20,6 +20,7 @@
             
             Connection con = null; 
             PreparedStatement pst = null; 
+            
             ResultSet rs = null;
             
             
@@ -57,11 +58,13 @@
                 return x;
             }
             
-            public ResultSet getTranslationID(long src_term_id){
+            public ResultSet getTranslationID(long src_term_id,long targ_lang){
                 
                 try{
-                    pst = con.prepareStatement("Select targ_term_id from translations where src_term_id = ?");
+                    pst = con.prepareStatement("Select * from translations left join terms on translations.targ_term_id = terms.id  where (src_term_id = ? or targ_term_id= ?) and terms.language_id= ?");
                     pst.setLong(1, src_term_id);
+                    pst.setLong(2, src_term_id);
+                    pst.setLong(3, targ_lang);
                     rs = pst.executeQuery();
                 }
                 catch(SQLException e){
@@ -76,7 +79,8 @@
         %>
         <%
             String src_term = new String();
-            int src_lang=0;
+            long src_lang=0;
+            long targ_lang=0;
             
             if(request.getParameter("source_term") != null){
                 src_term = request.getParameter("source_term");
@@ -85,13 +89,18 @@
             if(request.getParameter("source_language") != null){
                 src_lang =  Integer.parseInt(request.getParameter("source_language"));
             }
+            
+             if(request.getParameter("target_language") != null){
+                targ_lang =  Integer.parseInt(request.getParameter("target_language"));
+            }
 
+            
             out.println("Source term is " +src_term);
             out.println("\nSource language id is " +src_lang);
             Translate t = new Translate();
             long id = t.getTermID(src_lang,src_term);
             out.println("\nid is " +id);
-            ResultSet rs_trans_ids = t.getTranslationID(id);
+            ResultSet rs_trans_ids = t.getTranslationID(id,targ_lang);
             
 //            while(rs_trans_ids.next())
 //            {
@@ -106,7 +115,9 @@
                 </tr>
                <% while (rs_trans_ids.next()) {%>
                 <tr>
+                    <td><%= rs_trans_ids.getInt("src_term_id")%></td>
                     <td><%= rs_trans_ids.getInt("targ_term_id")%></td>
+                    <td><%= rs_trans_ids.getInt("language_id")%></td>
                 </tr>
                 <% } %>
             </tbody>
