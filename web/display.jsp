@@ -170,7 +170,7 @@
                     //need to get targets
                     for(Map.Entry<Long, Long> entry: translation_ids.entries())
                     {
-                        out.println("...key is :" + entry.getKey() + "value is :" + entry.getValue());
+                        out.println("...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
                        
                         while(rs_trans.next())
@@ -187,22 +187,21 @@
                 else{
                     out.println(" !!target");
                     // need to get source
-//                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
-//                    {
-//                        out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
-//                        rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
-//                       
-////                        while(rs_trans.next())
-////                        {
-////                            out.println("  in rs_trans"); 
-////                            String term_1 = rs_trans.getString(1);
-////                            String term_2 = rs_trans.getString(2);
-////
-////                            out.println(" term 1 is : "+term_1);
-////                            out.println(" term 2 is : "+term_2);
-////
-////                        }
-//                    }
+                    for(Map.Entry<Long, Long> entry: translation_ids.entries())
+                    {
+                        out.println("...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                        rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
+                       
+                        while(rs_trans.next())
+                        {
+                            out.println("  in rs_trans");
+                              
+                            String term_1 = rs_trans.getString(1);
+                            String term_2 = rs_trans.getString(2);
+                            translations.put(term_1,term_2);
+
+                        }
+                    }
                 }
                 
                 for(Map.Entry<String, String> entry: translations.entries())
