@@ -130,7 +130,8 @@
             //List<Long> targ_ids = new ArrayList<Long>();
             
             //Map<Long, Long> translation_ids = new LinkedHashMap<Long, Long>();
-            Multimap <Long, Long> translation_ids = ArrayListMultimap.create();           
+            Multimap <Long, Long> translation_ids = ArrayListMultimap.create();
+            Multimap <String, String> translations = ArrayListMultimap.create();
             
             while(rs_ids.next()){
                 long id = rs_ids.getLong("id");
@@ -151,11 +152,7 @@
                     
                 }
                 
-                for(Map.Entry<Long, Long> entry: translation_ids.entries())
-                {
-                    out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
-                
-                }
+//              
                 
                 long l=1;
                 out.println(translation_ids.get(l));
@@ -171,22 +168,21 @@
                 if(ids.get(0)==key){
                     out.println(" !!source");
                     //need to get targets
-//                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
-//                    {
-//                        //out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
-//                        //rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
-//                       
-////                        while(rs_trans.next())
-////                        {
-////                            out.println("  in rs_trans"); 
-////                            String term_1 = rs_trans.getString(1);
-////                            String term_2 = rs_trans.getString(2);
-////
-////                            out.println(" term 1 is : "+term_1);
-////                            out.println(" term 2 is : "+term_2);
-////
-////                        }
-//                    }
+                    for(Map.Entry<Long, Long> entry: translation_ids.entries())
+                    {
+                        out.println("...key is :" + entry.getKey() + "value is :" + entry.getValue());
+                        rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
+                       
+                        while(rs_trans.next())
+                        {
+                            out.println("  in rs_trans");
+                              
+                            String term_1 = rs_trans.getString(1);
+                            String term_2 = rs_trans.getString(2);
+                            translations.put(term_1,term_2);
+
+                        }
+                    }
                 }
                 else{
                     out.println(" !!target");
@@ -207,6 +203,11 @@
 ////
 ////                        }
 //                    }
+                }
+                
+                for(Map.Entry<String, String> entry: translations.entries())
+                {
+                    out.println("... TRANSLATIONS key is :" + entry.getKey() + "value is :" + entry.getValue());
                 }
 
                 //rs_trans = t.getTranslation(source_id,target_id);
