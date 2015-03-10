@@ -4,6 +4,12 @@
     Author     : Katie
 --%>
 
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Arrays"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.sql.*"%>
 <% Class.forName("com.mysql.jdbc.Driver"); %>
@@ -35,8 +41,8 @@
             }
             
             
-            public long getTermID(long src_lang_id,String term){
-                long x=0;
+            public ResultSet getTermID(long src_lang_id,String term){
+                
                 try{
                   //con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw"); 
                     pst = con.prepareStatement("Select id from terms where language_id= ? and term like ?");
@@ -44,18 +50,12 @@
                     pst.setString(2, term);
                     
                     rs = pst.executeQuery();
-                    
-                    while(rs.next()){
-                        x=(long)rs.getInt(1);
-                    }
-                    
-                    
-                    
+   
                 }
                 catch(SQLException e){
                     e.printStackTrace();
                 }
-                return x;
+                return rs;
             }
             
             public ResultSet getTranslationID(long src_term_id,long targ_lang){
@@ -73,6 +73,8 @@
                 return rs;
             }
             
+            //need get translaation if its a source and get trnslation if target????
+            
                public ResultSet getTranslation(long id_1,long id_2){
                 
                 try{
@@ -86,10 +88,7 @@
                 }
                 return rs;
             }
-            
-            
-            
-            
+     
         }
           
         %>
@@ -115,36 +114,73 @@
             
             out.println("Source term is " +src_term);
             out.println("Source language id is " +src_lang);
+            
             Translate t = new Translate();
-            long id = t.getTermID(src_lang,src_term);
-            out.println("Id is " +id);
-            out.println("Target language id is " +targ_lang);
-            ResultSet rs_trans_ids = t.getTranslationID(id,targ_lang);
+            ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
+            ResultSet rs_trans_ids=null;
             
- 
-            while(rs_trans_ids.next())
+            List<Long> ids = new ArrayList<Long>();
+            //List<Long> src_ids = new ArrayList<Long>();
+            //List<Long> targ_ids = new ArrayList<Long>();
+            
+            Map<Long, Long> translation_ids = new LinkedHashMap<Long, Long>();
+            
+            while(rs_ids.next()){
+                long id = rs_ids.getLong("id");
+                ids.add(id);
+            }
+            for(int i=0; i<ids.size(); i++)
             {
-                source_id = rs_trans_ids.getLong("src_term_id");
-                target_id = rs_trans_ids.getLong("targ_term_id");
-                out.println("    source_id is "+source_id);
-                out.println("    target_id is "+target_id);
+                out.println("Id is " +ids.get(i));
+                out.println("Target language id is " +targ_lang);
+                rs_trans_ids = t.getTranslationID(ids.get(i),targ_lang);
+                
+                while(rs_trans_ids.next())
+                {
+                    source_id = rs_trans_ids.getLong("src_term_id");
+                    target_id = rs_trans_ids.getLong("targ_term_id");
+                    translation_ids.put(source_id, target_id);
+                    
+                    //src_ids.add(source_id);
+                    //targ_ids.add(target_id);
+                    
+                }
+                
+                
+//                if(ids.get(0)==src_ids.get(0)){
+//                    out.println(" !!source");
+//                }
+//                else{
+//                    out.println(" !!target");
+//                }
+                
+                //check if src_term or targ_term in translation table
+                long key = (Long) translation_ids.keySet().toArray()[0];
+                out.println(" THE KEY IS; " +key);
+                
+                if(ids.get(0)==key){
+                    out.println(" !!source");
+                }
+                else{
+                    out.println(" !!target");
+                }
+
+                rs_trans = t.getTranslation(source_id,target_id);
+                
+                if(!rs_trans.next()){
+                    out.println(" no data in rs_trans");  
+                }
+
+                while(rs_trans.next()){
+                    String term = rs_trans.getString("term");
+
+
+
+                    out.println(" translates to "+term);
+
+                }
             }
-            rs_trans = t.getTranslation(source_id,target_id);
-            
-            if(!rs_trans.next()){
-                out.println(" no data in rs_trans");  
-            }
-            
-            while(rs_trans.next()){
-                String term = rs_trans.getString("term");
-                
-                
-                
-                out.println("    term is "+term);
-                
-            }
-            
             
 //            if(source_id==id)
 //            {
@@ -178,12 +214,6 @@
                 <% } %>
             </tbody>
         </table>
-            
-            
-            
-        
- 
-
-        
+                   
     </body>
 </html>
