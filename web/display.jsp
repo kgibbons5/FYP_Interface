@@ -4,6 +4,9 @@
     Author     : Katie
 --%>
 
+<%@page import="com.google.common.collect.Multimap"%>
+<%@page import="com.google.common.*"%>
+<%@page import="com.google.common.collect.ArrayListMultimap"%>
 <%@page import="java.util.LinkedHashMap"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
@@ -126,7 +129,8 @@
             //List<Long> src_ids = new ArrayList<Long>();
             //List<Long> targ_ids = new ArrayList<Long>();
             
-            Map<Long, Long> translation_ids = new LinkedHashMap<Long, Long>();
+            //Map<Long, Long> translation_ids = new LinkedHashMap<Long, Long>();
+            Multimap <Long, Long> translation_ids = ArrayListMultimap.create();           
             
             while(rs_ids.next()){
                 long id = rs_ids.getLong("id");
@@ -142,20 +146,23 @@
                 {
                     source_id = rs_trans_ids.getLong("src_term_id");
                     target_id = rs_trans_ids.getLong("targ_term_id");
+                   // out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
                     translation_ids.put(source_id, target_id);
-                    
-                    //src_ids.add(source_id);
-                    //targ_ids.add(target_id);
                     
                 }
                 
+                for(Map.Entry<Long, Long> entry: translation_ids.entries())
+                {
+                    out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
                 
-//                if(ids.get(0)==src_ids.get(0)){
-//                    out.println(" !!source");
-//                }
-//                else{
-//                    out.println(" !!target");
-//                }
+                }
+                
+                long l=1;
+                out.println(translation_ids.get(l));
+                
+                
+               
+              
                 
                 //check if src_term or targ_term in translation table
                 long key = (Long) translation_ids.keySet().toArray()[0];
@@ -164,77 +171,59 @@
                 if(ids.get(0)==key){
                     out.println(" !!source");
                     //need to get targets
-                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
-                    {
-                        out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
-                        rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
-                       
-//                        while(rs_trans.next())
-//                        {
-//                            out.println("  in rs_trans"); 
-//                            String term_1 = rs_trans.getString(1);
-//                            String term_2 = rs_trans.getString(2);
-//
-//                            out.println(" term 1 is : "+term_1);
-//                            out.println(" term 2 is : "+term_2);
-//
-//                        }
-                    }
+//                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
+//                    {
+//                        //out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
+//                        //rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
+//                       
+////                        while(rs_trans.next())
+////                        {
+////                            out.println("  in rs_trans"); 
+////                            String term_1 = rs_trans.getString(1);
+////                            String term_2 = rs_trans.getString(2);
+////
+////                            out.println(" term 1 is : "+term_1);
+////                            out.println(" term 2 is : "+term_2);
+////
+////                        }
+//                    }
                 }
                 else{
                     out.println(" !!target");
                     // need to get source
-                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
-                    {
-                        out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
-                        rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
-                       
-//                        while(rs_trans.next())
-//                        {
-//                            out.println("  in rs_trans"); 
-//                            String term_1 = rs_trans.getString(1);
-//                            String term_2 = rs_trans.getString(2);
-//
-//                            out.println(" term 1 is : "+term_1);
-//                            out.println(" term 2 is : "+term_2);
-//
-//                        }
-                    }
+//                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
+//                    {
+//                        out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
+//                        rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
+//                       
+////                        while(rs_trans.next())
+////                        {
+////                            out.println("  in rs_trans"); 
+////                            String term_1 = rs_trans.getString(1);
+////                            String term_2 = rs_trans.getString(2);
+////
+////                            out.println(" term 1 is : "+term_1);
+////                            out.println(" term 2 is : "+term_2);
+////
+////                        }
+//                    }
                 }
 
                 //rs_trans = t.getTranslation(source_id,target_id);
                 
                 
 
-                while(rs_trans.next()){
-                    out.println("  in rs_trans"); 
-                    String term_1 = rs_trans.getString(1);
-                    String term_2 = rs_trans.getString(2);
-
-                    out.println(" term 1 is : "+term_1);
-                    out.println(" term 2 is : "+term_2);
-
-                }
+//                while(rs_trans.next()){
+//                    out.println("  in rs_trans"); 
+//                    String term_1 = rs_trans.getString(1);
+//                    String term_2 = rs_trans.getString(2);
+//
+//                    out.println(" term 1 is : "+term_1);
+//                    out.println(" term 2 is : "+term_2);
+//
+//                }
             }
             
-//            if(source_id==id)
-//            {
-//                //want the target
-//                rs_trans = t.getTranslation(source_id,target_id);
-//                out.println(" source | translates to:" +target_id);
-//                
-//                
-//                while(rs_trans.next())
-//                {
-//                    String a = rs_trans.getString("term");
-//                    out.println(" term a :" +a);
-//                }
-//                
-//                
-//            }
-//            else{
-//                out.println(" target | translates to:" +source_id);
-//            }
             
             %>
             <table border="1">
@@ -242,11 +231,7 @@
                 <tr>
                     <td>Translation</td>
                 </tr>
-               <% while (rs_trans.next()) {%>
-                <tr>
-                    <td><%= rs_trans.getString(1)%></td>               
-                </tr>
-                <% } %>
+               
             </tbody>
         </table>
                    
