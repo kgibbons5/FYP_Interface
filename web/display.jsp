@@ -75,10 +75,10 @@
             
             //need get translaation if its a source and get trnslation if target????
             
-               public ResultSet getTranslation(long id_1,long id_2){
+          public ResultSet getTranslation(long id_1,long id_2){
                 
                 try{
-                    pst = con.prepareStatement("Select * from terms where id = ? or id= ?");
+                    pst = con.prepareStatement("Select t1.term, t2.term From terms t1, terms t2 Where t1.id = ? And t2.id = ?");
                     pst.setLong(1, id_1);
                     pst.setLong(2, id_2);
                     rs = pst.executeQuery();
@@ -87,7 +87,9 @@
                     e.printStackTrace();
                 }
                 return rs;
-            }
+           }
+            
+            
      
         }
           
@@ -161,23 +163,56 @@
                 
                 if(ids.get(0)==key){
                     out.println(" !!source");
+                    //need to get targets
+                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
+                    {
+                        out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
+                        rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
+                       
+//                        while(rs_trans.next())
+//                        {
+//                            out.println("  in rs_trans"); 
+//                            String term_1 = rs_trans.getString(1);
+//                            String term_2 = rs_trans.getString(2);
+//
+//                            out.println(" term 1 is : "+term_1);
+//                            out.println(" term 2 is : "+term_2);
+//
+//                        }
+                    }
                 }
                 else{
                     out.println(" !!target");
+                    // need to get source
+                    for(Map.Entry<Long, Long> entry: translation_ids.entrySet())
+                    {
+                        out.println("key is :" + entry.getKey() + "value is :" + entry.getValue());
+                        rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
+                       
+//                        while(rs_trans.next())
+//                        {
+//                            out.println("  in rs_trans"); 
+//                            String term_1 = rs_trans.getString(1);
+//                            String term_2 = rs_trans.getString(2);
+//
+//                            out.println(" term 1 is : "+term_1);
+//                            out.println(" term 2 is : "+term_2);
+//
+//                        }
+                    }
                 }
 
-                rs_trans = t.getTranslation(source_id,target_id);
+                //rs_trans = t.getTranslation(source_id,target_id);
                 
-                if(!rs_trans.next()){
-                    out.println(" no data in rs_trans");  
-                }
+                
 
                 while(rs_trans.next()){
-                    String term = rs_trans.getString("term");
+                    out.println("  in rs_trans"); 
+                    String term_1 = rs_trans.getString(1);
+                    String term_2 = rs_trans.getString(2);
 
-
-
-                    out.println(" translates to "+term);
+                    out.println(" term 1 is : "+term_1);
+                    out.println(" term 2 is : "+term_2);
 
                 }
             }
@@ -209,7 +244,7 @@
                 </tr>
                <% while (rs_trans.next()) {%>
                 <tr>
-                    <td><%= rs_trans.getString("term")%></td>               
+                    <td><%= rs_trans.getString(1)%></td>               
                 </tr>
                 <% } %>
             </tbody>
