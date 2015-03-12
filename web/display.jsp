@@ -20,10 +20,37 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Selecting Specific Data from a DB</title>
+        <style>
+           table.mytable {
+                width: 50%;
+                height: 50%;
+               
+               
+                border: 1px solid black;
+                border-collapse: collapse;
+                border-spacing: 10px 10px;
+            }
+            
+            td{
+                padding-top: 10px;
+                padding-bottom: 15px;
+                
+            }
+            
+            .term {
+                width: 10%;
+            }
+            
+            .lang {
+                width: 10%;
+            }
+            
+            
+        </style>
+        <title>Results</title>
     </head>
     <body bgcolor="#FFFFDF">
-        <h1>Selecting Specific Data from a DB</h1>
+        <h1>Results</h1>
         <%!
          public class Translate {
             
@@ -194,16 +221,6 @@
                     }
                 }
                 
-                   
-//                for(Map.Entry<String, String> entry: translations.entries()) { 
-//
-//                        out.println("... TRANSLATIONS key is :" + entry.getKey() + "value is :" + entry.getValue());
-//                        
-//                        String holder[] = new String[4];
-//                        holder = entry.getValue().split(",");
-//                        out.println("holder :" +" "+ holder[0]+" "+" "+ holder[1]+ " " + holder[2]+" " +holder[3] );
-//
-//                }
             }
             
             %>
@@ -212,26 +229,25 @@
             <p>
             <p>
                 
-            <table border="1">
+            <table class="mytable" border="1">
                 <% for(Map.Entry<String, String> entry: translations.entries()) { 
                 String holder[] = new String[4];
                 holder = entry.getValue().split(",");    
-                
-                
+     
                 %>
                     <tr>
-                        <td><%= holder[3]%></td>
+                        <td colspan="2"><%= holder[3]%></td>
                         
                     </tr>
                     <tr>
-                        <td><%= entry.getKey()%></td>
-                        <td><%= holder[0]%></td>
+                        <td class ="lang"><%= holder[0] %></td>
+                        <td class ="term"><%= entry.getKey() %></td>
                     </tr>
                      <tr>
-                        <td><%= holder[1]%></td>
                         <td><%= holder[2]%></td>
-                        <td></td>
+                        <td><%= holder[1]%></td>   
                     </tr>
+                    
                      <% } %>
             </table>    
             
