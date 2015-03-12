@@ -165,11 +165,10 @@
                 long key = (Long) translation_ids.keySet().toArray()[0];
                 out.println(" THE KEY IS; " +key);
                 
-                if(ids.get(0)==key){
-                    out.println(" !!source");
-                    //need to get targets
-                    for(Map.Entry<Long, Long> entry: translation_ids.entries())
-                    {
+                for(Map.Entry<Long, Long> entry: translation_ids.entries())
+                {
+                    if(ids.get(0)==entry.getKey()){
+                        
                         out.println("...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
                        
@@ -183,12 +182,8 @@
 
                         }
                     }
-                }
-                else{
-                    out.println(" !!target");
-                    // need to get source
-                    for(Map.Entry<Long, Long> entry: translation_ids.entries())
-                    {
+                    else{
+                        
                         out.println("...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
                        
@@ -234,6 +229,7 @@
                
             </tbody>
         </table>
-                   
+            <a href="index.jsp"> Back </a>    
+            
     </body>
 </html>
