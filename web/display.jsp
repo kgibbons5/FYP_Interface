@@ -22,16 +22,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Selecting Specific Data from a DB</title>
     </head>
-    <body>
+    <body bgcolor="#FFFFDF">
         <h1>Selecting Specific Data from a DB</h1>
         <%!
          public class Translate {
             
             Connection con = null; 
             PreparedStatement pst = null; 
-            
             ResultSet rs = null;
-            
             
             
             public Translate(){
@@ -47,7 +45,7 @@
             public ResultSet getTermID(long src_lang_id,String term){
                 
                 try{
-                  //con = DriverManager.getConnection("jdbc:mysql://danu6.it.nuigalway.ie:3306/mydb1803","mydb1803gk","ki1riw"); 
+             
                     pst = con.prepareStatement("Select id from terms where language_id= ? and term like ?");
                     pst.setLong(1, src_lang_id);
                     pst.setString(2, term);
@@ -76,12 +74,12 @@
                 return rs;
             }
             
-            //need get translaation if its a source and get trnslation if target????
+           
             
-          public ResultSet getTranslation(long id_1,long id_2){
+            public ResultSet getTranslation(long id_1,long id_2){
                 
                 try{
-                    pst = con.prepareStatement("Select t1.term, t2.term From terms t1, terms t2 Where t1.id = ? And t2.id = ?");
+                    pst = con.prepareStatement("Select terms.term, languages.language, terms1.term As term1, languages1.language As language1, categories.category From terms Inner Join languages On terms.language_id = languages.id Inner Join terms_has_categories On terms_has_categories.terms_id = terms.id Inner Join categories On terms_has_categories.categories_id = categories.id, terms terms1 Inner Join languages languages1 On terms1.language_id = languages1.id Where terms.id = ? And terms1.id = ?");
                     pst.setLong(1, id_1);
                     pst.setLong(2, id_2);
                     rs = pst.executeQuery();
@@ -90,10 +88,7 @@
                     e.printStackTrace();
                 }
                 return rs;
-           }
-            
-            
-     
+            }
         }
           
         %>
@@ -116,7 +111,6 @@
                 targ_lang =  Integer.parseInt(request.getParameter("target_language"));
             }
 
-            
             out.println("Source term is " +src_term);
             out.println("Source language id is " +src_lang);
             
@@ -126,10 +120,7 @@
             ResultSet rs_trans_ids=null;
             
             List<Long> ids = new ArrayList<Long>();
-            //List<Long> src_ids = new ArrayList<Long>();
-            //List<Long> targ_ids = new ArrayList<Long>();
             
-            //Map<Long, Long> translation_ids = new LinkedHashMap<Long, Long>();
             Multimap <Long, Long> translation_ids = ArrayListMultimap.create();
             Multimap <String, String> translations = ArrayListMultimap.create();
             
@@ -137,6 +128,7 @@
                 long id = rs_ids.getLong("id");
                 ids.add(id);
             }
+            
             for(int i=0; i<ids.size(); i++)
             {
                 out.println("Id is " +ids.get(i));
@@ -147,19 +139,11 @@
                 {
                     source_id = rs_trans_ids.getLong("src_term_id");
                     target_id = rs_trans_ids.getLong("targ_term_id");
-                   // out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
+                    //out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
                     translation_ids.put(source_id, target_id);
                     
                 }
                 
-//              
-                
-                long l=1;
-                out.println(translation_ids.get(l));
-                
-                
-               
-              
                 
                 //check if src_term or targ_term in translation table
                 long key = (Long) translation_ids.keySet().toArray()[0];
@@ -169,7 +153,7 @@
                 {
                     if(ids.get(0)==entry.getKey()){
                         
-                        out.println("...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                        out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
                        
                         while(rs_trans.next())
@@ -177,14 +161,19 @@
                             out.println("  in rs_trans");
                               
                             String term_1 = rs_trans.getString(1);
-                            String term_2 = rs_trans.getString(2);
-                            translations.put(term_1,term_2);
+                            String lang_1 = rs_trans.getString(2);
+                            String term_2 = rs_trans.getString(3);
+                            String lang_2 = rs_trans.getString(4);
+                            String cat = rs_trans.getString(5);
+                            String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
+                            
+                            translations.put(term_1,hold);
 
                         }
                     }
                     else{
                         
-                        out.println("...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                        out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
                        
                         while(rs_trans.next())
@@ -192,44 +181,60 @@
                             out.println("  in rs_trans");
                               
                             String term_1 = rs_trans.getString(1);
-                            String term_2 = rs_trans.getString(2);
-                            translations.put(term_1,term_2);
+                            String lang_1 = rs_trans.getString(2);
+                            String term_2 = rs_trans.getString(3);
+                            String lang_2 = rs_trans.getString(4);
+                            String cat = rs_trans.getString(5);
+                            String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
+                            
+                            translations.put(term_1,hold);
+                            
 
                         }
                     }
                 }
                 
-                for(Map.Entry<String, String> entry: translations.entries())
-                {
-                    out.println("... TRANSLATIONS key is :" + entry.getKey() + "value is :" + entry.getValue());
-                }
-
-                //rs_trans = t.getTranslation(source_id,target_id);
-                
-                
-
-//                while(rs_trans.next()){
-//                    out.println("  in rs_trans"); 
-//                    String term_1 = rs_trans.getString(1);
-//                    String term_2 = rs_trans.getString(2);
+                   
+//                for(Map.Entry<String, String> entry: translations.entries()) { 
 //
-//                    out.println(" term 1 is : "+term_1);
-//                    out.println(" term 2 is : "+term_2);
+//                        out.println("... TRANSLATIONS key is :" + entry.getKey() + "value is :" + entry.getValue());
+//                        
+//                        String holder[] = new String[4];
+//                        holder = entry.getValue().split(",");
+//                        out.println("holder :" +" "+ holder[0]+" "+" "+ holder[1]+ " " + holder[2]+" " +holder[3] );
 //
 //                }
             }
             
-            
             %>
+             
+            <a href="index.jsp"><button> Back </button></a>    
+            <p>
+            <p>
+                
             <table border="1">
-            <tbody>
-                <tr>
-                    <td>Translation</td>
-                </tr>
-               
-            </tbody>
-        </table>
-            <a href="index.jsp"> Back </a>    
+                <% for(Map.Entry<String, String> entry: translations.entries()) { 
+                String holder[] = new String[4];
+                holder = entry.getValue().split(",");    
+                
+                
+                %>
+                    <tr>
+                        <td><%= holder[3]%></td>
+                        
+                    </tr>
+                    <tr>
+                        <td><%= entry.getKey()%></td>
+                        <td><%= holder[0]%></td>
+                    </tr>
+                     <tr>
+                        <td><%= holder[1]%></td>
+                        <td><%= holder[2]%></td>
+                        <td></td>
+                    </tr>
+                     <% } %>
+            </table>    
+            
             
     </body>
 </html>
