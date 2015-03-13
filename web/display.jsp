@@ -3,7 +3,12 @@
     Created on : 03-Mar-2015, 17:26:33
     Author     : Katie
 --%>
-
+<%@page import="java.io.BufferedReader" %>
+<%@page import="java.io.DataOutputStream" %>
+<%@page import="java.io.InputStreamReader" %>
+<%@page import="java.net.HttpURLConnection"%>
+<%@page import="java.net.URL" %>
+<%@page import="javax.net.ssl.HttpsURLConnection" %>
 <%@page import="com.google.common.collect.Multimap"%>
 <%@page import="com.google.common.*"%>
 <%@page import="com.google.common.collect.ArrayListMultimap"%>
@@ -116,6 +121,40 @@
                 }
                 return rs;
             }
+            
+          	// HTTP GET request
+	private String sendGet(String term) throws Exception {
+     
+		String url = "http://words.bighugelabs.com/api/2/d5813e4fd3350fc0199ce22926247826/"+term+"/";
+ 
+                    URL obj = new URL(url);
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                    // optional default is GET
+                    con.setRequestMethod("GET");
+
+                    //add request header
+                    String USER_AGENT = "Mozilla/5.0";
+                    con.setRequestProperty("User-Agent", USER_AGENT);
+
+                    int responseCode = con.getResponseCode();
+
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuffer response = new StringBuffer();
+
+
+                    while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                    }
+                    in.close();
+
+                    //print result
+                    return (response.toString());
+
+            }
+
         }
           
         %>
@@ -251,6 +290,14 @@
                      <% } %>
             </table>    
             
-            
+            <p>
+            <p>
+            <p>
+                <%
+                    Translate http = new Translate();
+                    String term = "hate";
+                    String api_call = http.sendGet(term);
+                    out.println("  "+api_call);
+                %>
     </body>
 </html>
