@@ -352,21 +352,26 @@
                     while(rs_syn_term_id.next())
                     {
                         long term_id = rs_syn_term_id.getLong(1);
-                        //out.println(" term id is "+term_id);
+                        out.println(" term id is "+term_id);
                         term_syn_ids.add(term_id);
                     }
                     
+                    out.println("Term_syn_ids size is "+term_syn_ids.size());
+                    
                     for(int i=0; i<term_syn_ids.size(); i++)
                     {
-                        //out.println("Id is " +term_syn_ids.get(i));
-                        //out.println("Target language id is " +targ_lang);
+                        out.println("IN TERM_SYN_IDS FOR LOOP " +i);
+                        out.println("Id is " +term_syn_ids.get(i));
+                        out.println("Target language id is " +targ_lang);
+                        
+                        
                         rs_trans_syn_ids = t.getTranslationID(term_syn_ids.get(i),targ_lang);
 
                         while(rs_trans_syn_ids.next())
                         {
                             source_id = rs_trans_syn_ids.getLong("src_term_id");
                             target_id = rs_trans_syn_ids.getLong("targ_term_id");
-                            //out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
+                            out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
                             translation_syn_ids.put(source_id, target_id);
 
                         }
@@ -374,12 +379,20 @@
                         //check if src_term or targ_term in translation table
                         long key = (Long) translation_syn_ids.keySet().toArray()[0];
                         //out.println(" THE KEY IS; " +key);
-
+                       
+                        /////problem here
+                         out.println("ooooooooooooooo size is: "+translation_syn_ids.size());
+                        
                         for(Map.Entry<Long, Long> entry: translation_syn_ids.entries())
                         {
+                        long counter=1;
+                        long counter2=1;
+                        out.println("LOOK HERE "+term_syn_ids.get(0) +"   "+entry.getKey());
+                            
+                            
                             if(term_syn_ids.get(0)==entry.getKey()){
 
-                                //out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                                out.println("translation_syn_ids...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                                 rs_trans_syn = t.getTranslation(entry.getKey(), entry.getValue());
 
                                 while(rs_trans_syn.next())
@@ -392,6 +405,8 @@
                                     String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+","+syn+"";
 
                                     translations_syn.put(term_1,hold);
+                                    out.println("counter1 is !!!!!"+counter);
+                                    counter ++;
 
                                 }
                             }
@@ -410,17 +425,28 @@
                                     String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+","+syn+"";
 
                                     translations_syn.put(term_1,hold);
+                                    
+                                     out.println("counter2 is !!!!!"+counter2);
+                                    counter2 ++;
 
                                 }
+                               
+                                
                             }
                         }   
+                        translation_syn_ids.clear();
 
                     }
-    
+//                    for(Map.Entry<String, String> entry: translations_syn.entries())
+//                        {
+//                            out.println("......translations_syn....Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+//                        }
+                    
+                    
                 }
-                else{
-                    out.println("No match found");
-                }
+//                else{
+//                    out.println("No match found");
+//                }
             %>
             <p>
             <p>
