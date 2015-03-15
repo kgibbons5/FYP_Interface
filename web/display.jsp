@@ -134,7 +134,38 @@
                     e.printStackTrace();
                 }
                 return rs;
-            }        
+            }
+            
+            public boolean checkEnglishTerm(long src_lang) throws SQLException{
+
+                Statement st = null; 
+                long eng_lang=0;
+
+                try{
+
+                    st =con.createStatement();
+                    rs = st.executeQuery("Select id from languages where language like 'english';");
+
+
+                    while(rs.next()){
+                        eng_lang=rs.getLong("id");
+                    }
+
+                   }
+                   catch(SQLException e){
+                       e.printStackTrace();
+                   }
+
+                if(eng_lang==src_lang){
+                    System.out.println("ENGLISH term_id: "+src_lang);
+                    return true;
+                }
+                else{
+                    System.out.println("NOT ENGLISH term_id: "+src_lang);
+                    return false;
+                }
+
+            }         
         }
           
         %>
@@ -275,12 +306,13 @@
             </table>    
             
             <% 
-                if(rs_trans == null)
+                // no results and source language is english
+                if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
                     out.println("No match found .... searching synonyms for...."+src_term);
                     rs_syn_id = t.checkSynonyms(src_term);
                     
-                    if(rs_syn_id == null)
+                    if(!rs_syn_id.isBeforeFirst())
                     {
                         out.println("No synonyms found");
                     }
@@ -288,10 +320,16 @@
                     while(rs_syn_id.next())
                     {
                         out.println("Synonyms found");
-                        
+                        long syn_id = rs_syn_id.getLong(1);
+                        out.println("id is "+ syn_id);
                        
                     }
                 }
+                if(rs_trans == null){
+                    out.println("No match found");
+                }
+                
+                
             %>
             <p>
             <p>
