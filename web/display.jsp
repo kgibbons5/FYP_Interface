@@ -458,7 +458,7 @@
                             holder = entry.getValue().split(",");         
                     %>
                     <tr>
-                        <td>Synonyms for:</td>
+                        <td></td>
                         <td><%= holder[4]%></td>
                         
                     </tr>
