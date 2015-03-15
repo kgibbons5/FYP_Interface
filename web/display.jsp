@@ -331,7 +331,7 @@
                 // no results and source language is english
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
-                    out.println("No match found .... searching synonyms for...."+src_term);
+                    out.println("No match found for term: "+src_term+" searching for synonyms");
                     rs_syn_id = t.checkSynonyms(src_term);
                     
                     if(!rs_syn_id.isBeforeFirst())
@@ -352,14 +352,14 @@
                     while(rs_syn_term_id.next())
                     {
                         long term_id = rs_syn_term_id.getLong(1);
-                        out.println(" term id is "+term_id);
+                        //out.println(" term id is "+term_id);
                         term_syn_ids.add(term_id);
                     }
                     
                     for(int i=0; i<term_syn_ids.size(); i++)
                     {
-                        out.println("Id is " +term_syn_ids.get(i));
-                        out.println("Target language id is " +targ_lang);
+                        //out.println("Id is " +term_syn_ids.get(i));
+                        //out.println("Target language id is " +targ_lang);
                         rs_trans_syn_ids = t.getTranslationID(term_syn_ids.get(i),targ_lang);
 
                         while(rs_trans_syn_ids.next())
@@ -373,19 +373,17 @@
 
                         //check if src_term or targ_term in translation table
                         long key = (Long) translation_syn_ids.keySet().toArray()[0];
-                        out.println(" THE KEY IS; " +key);
+                        //out.println(" THE KEY IS; " +key);
 
                         for(Map.Entry<Long, Long> entry: translation_syn_ids.entries())
                         {
                             if(term_syn_ids.get(0)==entry.getKey()){
 
-                                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                                //out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                                 rs_trans_syn = t.getTranslation(entry.getKey(), entry.getValue());
 
                                 while(rs_trans_syn.next())
                                 {
-                                    out.println("  in rs_trans_syn");
-
                                     String term_1 = rs_trans_syn.getString(1);
                                     String lang_1 = rs_trans_syn.getString(2);
                                     String term_2 = rs_trans_syn.getString(3);
@@ -399,16 +397,11 @@
                             }
                             else{
 
-                                out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                                //out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                                 rs_trans_syn = t.getTranslation(entry.getValue(),entry.getKey());
-
-
-
 
                                 while(rs_trans_syn.next())
                                 {
-                                    out.println("  in rs_trans_syn");
-
                                     String term_1 = rs_trans_syn.getString(1);
                                     String lang_1 = rs_trans_syn.getString(2);
                                     String term_2 = rs_trans_syn.getString(3);
@@ -441,7 +434,10 @@
      
                 %>
                     <tr>
-                        <td>Synonyms</td>
+                    <th colspan="2">Synonyms and their translations </th>
+                    </tr>
+                    <tr>
+                        <td>Synonyms for:</td>
                         <td><%= holder[4]%></td>
                         
                     </tr>
@@ -455,8 +451,6 @@
                     </tr>
                     
             <% } %>
-            </table>        
-                
-                
+            </table>                 
     </body>
 </html>
