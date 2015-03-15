@@ -122,39 +122,7 @@
                 return rs;
             }
             
-          	// HTTP GET request
-	private String sendGet(String term) throws Exception {
-     
-		String url = "http://words.bighugelabs.com/api/2/d5813e4fd3350fc0199ce22926247826/"+term+"/";
- 
-                    URL obj = new URL(url);
-                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-                    // optional default is GET
-                    con.setRequestMethod("GET");
-
-                    //add request header
-                    String USER_AGENT = "Mozilla/5.0";
-                    con.setRequestProperty("User-Agent", USER_AGENT);
-
-                    int responseCode = con.getResponseCode();
-
-                    BufferedReader in = new BufferedReader(
-                            new InputStreamReader(con.getInputStream()));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-
-
-                    while ((inputLine = in.readLine()) != null) {
-                            response.append(inputLine);
-                    }
-                    in.close();
-
-                    //print result
-                    return (response.toString());
-
-            }
-
+        
         }
           
         %>
@@ -209,8 +177,7 @@
                     translation_ids.put(source_id, target_id);
                     
                 }
-                
-                
+         
                 //check if src_term or targ_term in translation table
                 long key = (Long) translation_ids.keySet().toArray()[0];
                 out.println(" THE KEY IS; " +key);
@@ -255,11 +222,9 @@
                             
                             translations.put(term_1,hold);
                             
-
                         }
                     }
-                }
-                
+                }   
             }
             
             %>
@@ -269,7 +234,8 @@
             <p>
                 
             <table class="mytable" border="1">
-                <% for(Map.Entry<String, String> entry: translations.entries()) { 
+            <% 
+            for(Map.Entry<String, String> entry: translations.entries()) { 
                 String holder[] = new String[4];
                 holder = entry.getValue().split(",");    
      
@@ -287,17 +253,17 @@
                         <td><%= holder[1]%></td>   
                     </tr>
                     
-                     <% } %>
+            <% } %>
             </table>    
             
+            <% 
+                if(rs_trans == null)
+                {
+                    out.println("No match found");
+                }
+            %>
             <p>
             <p>
             <p>
-                <%
-                    Translate http = new Translate();
-                    String term = "hate";
-                    String api_call = http.sendGet(term);
-                    out.println("  "+api_call);
-                %>
     </body>
 </html>
