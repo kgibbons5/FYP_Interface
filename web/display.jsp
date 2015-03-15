@@ -190,6 +190,7 @@
             long targ_lang=0;
             long source_id=0;
             long target_id=0;
+            String syn=null;
             
             if(request.getParameter("source_term") != null){
                 src_term = request.getParameter("source_term");
@@ -342,7 +343,7 @@
                     {
                         out.println("Synonyms found");
                         long syn_id = rs_syn_id.getLong(1);
-                        String syn =  rs_syn_id.getString(2);
+                        syn =  rs_syn_id.getString(2);
                         out.println("id is "+ syn_id +"   syn is "+syn);
                         rs_syn_term_id= t.linkTermSynonym(syn_id);
                        
@@ -390,7 +391,7 @@
                                     String term_2 = rs_trans_syn.getString(3);
                                     String lang_2 = rs_trans_syn.getString(4);
                                     String cat = rs_trans_syn.getString(5);
-                                    String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
+                                    String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+","+syn+"";
 
                                     translations_syn.put(term_1,hold);
 
@@ -413,7 +414,7 @@
                                     String term_2 = rs_trans_syn.getString(3);
                                     String lang_2 = rs_trans_syn.getString(4);
                                     String cat = rs_trans_syn.getString(5);
-                                    String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
+                                    String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+","+syn+"";
 
                                     translations_syn.put(term_1,hold);
 
@@ -435,12 +436,13 @@
              <table class="mytable" border="1">
             <% 
             for(Map.Entry<String, String> entry: translations_syn.entries()) { 
-                String holder[] = new String[4];
+                String holder[] = new String[5];
                 holder = entry.getValue().split(",");    
      
                 %>
                     <tr>
-                        <td colspan="2"><%= holder[3]%></td>
+                        <td>Synonyms</td>
+                        <td><%= holder[4]%></td>
                         
                     </tr>
                     <tr>
