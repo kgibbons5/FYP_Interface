@@ -165,7 +165,22 @@
                     return false;
                 }
 
-            }         
+            }
+            
+            public ResultSet linkTermSynonym(long syn_id){
+                
+                try{
+                    pst = con.prepareStatement("Select terms_id from terms_has_synonyms where synonyms_id =?");
+                    pst.setLong(1, syn_id);
+                    rs = pst.executeQuery();
+                }
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+                return rs;
+            }
+            
+            
         }
           
         %>
@@ -196,9 +211,11 @@
             ResultSet rs_trans=null;
             ResultSet rs_trans_ids=null;
             ResultSet rs_syn_id=null;
+            ResultSet rs_syn_term_id=null;
             
             
             List<Long> ids = new ArrayList<Long>();
+            List<Long> term_syn_ids = new ArrayList<Long>();
             
             Multimap <Long, Long> translation_ids = ArrayListMultimap.create();
             Multimap <String, String> translations = ArrayListMultimap.create();
@@ -306,6 +323,10 @@
             </table>    
             
             <% 
+                if(rs_trans == null){
+                    out.println("No match found");
+                }
+            
                 // no results and source language is english
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
@@ -321,13 +342,20 @@
                     {
                         out.println("Synonyms found");
                         long syn_id = rs_syn_id.getLong(1);
-                        out.println("id is "+ syn_id);
+                        String syn =  rs_syn_id.getString(2);
+                        out.println("id is "+ syn_id +"   syn is "+syn);
+                        rs_syn_term_id= t.linkTermSynonym(syn_id);
                        
                     }
+                    
+                    while(rs_syn_term_id.next())
+                    {
+                        long term_id = rs_syn_term_id.getLong(1);
+                        out.println(" term id is "+term_id);
+                        term_syn_ids.add(term_id);
+                    }
                 }
-                if(rs_trans == null){
-                    out.println("No match found");
-                }
+                
                 
                 
             %>
