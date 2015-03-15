@@ -122,7 +122,19 @@
                 return rs;
             }
             
-        
+            
+            public ResultSet checkSynonyms(String term){
+                
+                try{
+                    pst = con.prepareStatement("Select * from synonyms where synonym like ?");
+                    pst.setString(1, term);
+                    rs = pst.executeQuery();
+                }
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+                return rs;
+            }        
         }
           
         %>
@@ -152,6 +164,8 @@
             ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
             ResultSet rs_trans_ids=null;
+            ResultSet rs_syn_id=null;
+            
             
             List<Long> ids = new ArrayList<Long>();
             
@@ -208,6 +222,9 @@
                         
                         out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
+                        
+                        
+                        
                        
                         while(rs_trans.next())
                         {
@@ -225,6 +242,7 @@
                         }
                     }
                 }   
+                
             }
             
             %>
@@ -259,7 +277,20 @@
             <% 
                 if(rs_trans == null)
                 {
-                    out.println("No match found");
+                    out.println("No match found .... searching synonyms for...."+src_term);
+                    rs_syn_id = t.checkSynonyms(src_term);
+                    
+                    if(rs_syn_id == null)
+                    {
+                        out.println("No synonyms found");
+                    }
+                    
+                    while(rs_syn_id.next())
+                    {
+                        out.println("Synonyms found");
+                        
+                       
+                    }
                 }
             %>
             <p>
