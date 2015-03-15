@@ -57,7 +57,7 @@
     <body bgcolor="#FFFFDF">
         <h1>Results</h1>
         <%!
-         public class Translate {
+        public class Translate {
             
             Connection con = null; 
             PreparedStatement pst = null; 
@@ -179,8 +179,6 @@
                 }
                 return rs;
             }
-            
-            
         }
           
         %>
@@ -275,10 +273,7 @@
                         
                         out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
-                        
-                        
-                        
-                       
+                   
                         while(rs_trans.next())
                         {
                             out.println("  in rs_trans");
@@ -294,8 +289,7 @@
                             
                         }
                     }
-                }   
-                
+                }
             }
             
             %>
@@ -381,14 +375,11 @@
                         //out.println(" THE KEY IS; " +key);
                        
                         /////problem here
-                         out.println("ooooooooooooooo size is: "+translation_syn_ids.size());
+                         //out.println("ooooooooooooooo size is: "+translation_syn_ids.size());
                         
                         for(Map.Entry<Long, Long> entry: translation_syn_ids.entries())
                         {
-                        long counter=1;
-                        long counter2=1;
-                        out.println("LOOK HERE "+term_syn_ids.get(0) +"   "+entry.getKey());
-                            
+                            //out.println("LOOK HERE "+term_syn_ids.get(0) +"   "+entry.getKey());
                             
                             if(term_syn_ids.get(0)==entry.getKey()){
 
@@ -405,8 +396,6 @@
                                     String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+","+syn+"";
 
                                     translations_syn.put(term_1,hold);
-                                    out.println("counter1 is !!!!!"+counter);
-                                    counter ++;
 
                                 }
                             }
@@ -425,13 +414,7 @@
                                     String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+","+syn+"";
 
                                     translations_syn.put(term_1,hold);
-                                    
-                                     out.println("counter2 is !!!!!"+counter2);
-                                    counter2 ++;
-
                                 }
-                               
-                                
                             }
                         }   
                         translation_syn_ids.clear();
@@ -459,8 +442,7 @@
                     %>
                     <tr>
                         <td></td>
-                        <td><%= holder[4]%></td>
-                        
+                        <td><%= holder[4]%></td>                        
                     </tr>
                     <tr>
                         <td class ="lang"><%= holder[0] %></td>
@@ -469,8 +451,7 @@
                      <tr>
                         <td><%= holder[2]%></td>
                         <td><%= holder[1]%></td>   
-                    </tr>
-                    
+                    </tr>                    
             <% } %>
             </table>                 
     </body>
