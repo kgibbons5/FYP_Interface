@@ -437,12 +437,6 @@
                         translation_syn_ids.clear();
 
                     }
-//                    for(Map.Entry<String, String> entry: translations_syn.entries())
-//                        {
-//                            out.println("......translations_syn....Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-//                        }
-                    
-                    
                 }
 //                else{
 //                    out.println("No match found");
@@ -453,15 +447,16 @@
             <p>
                 
              <table class="mytable" border="1">
-            <% 
-            for(Map.Entry<String, String> entry: translations_syn.entries()) { 
-                String holder[] = new String[5];
-                holder = entry.getValue().split(",");    
-     
-                %>
+                    <thead>
                     <tr>
-                    <th colspan="2">Synonyms and their translations </th>
+                        <th colspan="2">Synonyms and their translations </th>
                     </tr>
+                    </thead>
+                    <% 
+                        for(Map.Entry<String, String> entry: translations_syn.entries()) { 
+                            String holder[] = new String[5];
+                            holder = entry.getValue().split(",");         
+                    %>
                     <tr>
                         <td>Synonyms for:</td>
                         <td><%= holder[4]%></td>
