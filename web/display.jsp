@@ -29,8 +29,6 @@
            table.mytable {
                 width: 50%;
                 height: 50%;
-               
-               
                 border: 1px solid black;
                 border-collapse: collapse;
                 border-spacing: 10px 10px;
@@ -317,6 +315,9 @@
                         <td><%= holder[2]%></td>
                         <td><%= holder[1]%></td>   
                     </tr>
+                     <tr>
+                        <td  colspan="2"></td>
+                    </tr>   
                     
             <% } %>
             </table>    
@@ -451,7 +452,10 @@
                      <tr>
                         <td><%= holder[2]%></td>
                         <td><%= holder[1]%></td>   
-                    </tr>                    
+                    </tr>   
+                     <tr>
+                        <td  colspan="2"></td>
+                    </tr>   
             <% } %>
             </table>                 
     </body>
