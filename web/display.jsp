@@ -209,7 +209,9 @@
             Translate t = new Translate();
             ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
+            ResultSet rs_trans_syn=null;
             ResultSet rs_trans_ids=null;
+            ResultSet rs_trans_syn_ids=null;
             ResultSet rs_syn_id=null;
             ResultSet rs_syn_term_id=null;
             
@@ -218,7 +220,9 @@
             List<Long> term_syn_ids = new ArrayList<Long>();
             
             Multimap <Long, Long> translation_ids = ArrayListMultimap.create();
+            Multimap <Long, Long> translation_syn_ids = ArrayListMultimap.create();
             Multimap <String, String> translations = ArrayListMultimap.create();
+            Multimap <String, String> translations_syn = ArrayListMultimap.create();
             
             while(rs_ids.next()){
                 long id = rs_ids.getLong("id");
@@ -323,10 +327,6 @@
             </table>    
             
             <% 
-                if(rs_trans == null){
-                    out.println("No match found");
-                }
-            
                 // no results and source language is english
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
@@ -354,13 +354,107 @@
                         out.println(" term id is "+term_id);
                         term_syn_ids.add(term_id);
                     }
+                    
+                    for(int i=0; i<term_syn_ids.size(); i++)
+                    {
+                        out.println("Id is " +term_syn_ids.get(i));
+                        out.println("Target language id is " +targ_lang);
+                        rs_trans_syn_ids = t.getTranslationID(term_syn_ids.get(i),targ_lang);
+
+                        while(rs_trans_syn_ids.next())
+                        {
+                            source_id = rs_trans_syn_ids.getLong("src_term_id");
+                            target_id = rs_trans_syn_ids.getLong("targ_term_id");
+                            //out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
+                            translation_syn_ids.put(source_id, target_id);
+
+                        }
+
+                        //check if src_term or targ_term in translation table
+                        long key = (Long) translation_syn_ids.keySet().toArray()[0];
+                        out.println(" THE KEY IS; " +key);
+
+                        for(Map.Entry<Long, Long> entry: translation_syn_ids.entries())
+                        {
+                            if(term_syn_ids.get(0)==entry.getKey()){
+
+                                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                                rs_trans_syn = t.getTranslation(entry.getKey(), entry.getValue());
+
+                                while(rs_trans_syn.next())
+                                {
+                                    out.println("  in rs_trans_syn");
+
+                                    String term_1 = rs_trans_syn.getString(1);
+                                    String lang_1 = rs_trans_syn.getString(2);
+                                    String term_2 = rs_trans_syn.getString(3);
+                                    String lang_2 = rs_trans_syn.getString(4);
+                                    String cat = rs_trans_syn.getString(5);
+                                    String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
+
+                                    translations_syn.put(term_1,hold);
+
+                                }
+                            }
+                            else{
+
+                                out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                                rs_trans_syn = t.getTranslation(entry.getValue(),entry.getKey());
+
+
+
+
+                                while(rs_trans_syn.next())
+                                {
+                                    out.println("  in rs_trans_syn");
+
+                                    String term_1 = rs_trans_syn.getString(1);
+                                    String lang_1 = rs_trans_syn.getString(2);
+                                    String term_2 = rs_trans_syn.getString(3);
+                                    String lang_2 = rs_trans_syn.getString(4);
+                                    String cat = rs_trans_syn.getString(5);
+                                    String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
+
+                                    translations_syn.put(term_1,hold);
+
+                                }
+                            }
+                        }   
+
+                    }
+    
                 }
-                
-                
-                
+                else{
+                    out.println("No match found");
+                }
             %>
             <p>
             <p>
             <p>
+                
+             <table class="mytable" border="1">
+            <% 
+            for(Map.Entry<String, String> entry: translations_syn.entries()) { 
+                String holder[] = new String[4];
+                holder = entry.getValue().split(",");    
+     
+                %>
+                    <tr>
+                        <td colspan="2"><%= holder[3]%></td>
+                        
+                    </tr>
+                    <tr>
+                        <td class ="lang"><%= holder[0] %></td>
+                        <td class ="term"><%= entry.getKey() %></td>
+                    </tr>
+                     <tr>
+                        <td><%= holder[2]%></td>
+                        <td><%= holder[1]%></td>   
+                    </tr>
+                    
+            <% } %>
+            </table>        
+                
+                
     </body>
 </html>
