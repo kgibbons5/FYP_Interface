@@ -78,7 +78,7 @@
              
                     pst = con.prepareStatement("Select id from terms where language_id= ? and term like ?");
                     pst.setLong(1, src_lang_id);
-                    pst.setString(2, term);
+                    pst.setString(2, "%" +term+ "%");
                     
                     rs = pst.executeQuery();
    
@@ -125,7 +125,7 @@
                 
                 try{
                     pst = con.prepareStatement("Select * from synonyms where synonym like ?");
-                    pst.setString(1, term);
+                    pst.setString(1, "%" +term+ "%");
                     rs = pst.executeQuery();
                 }
                 catch(SQLException e){
@@ -288,7 +288,10 @@
                         }
                     }
                 }
+                // clear map so no duplicate values
+                translation_ids.clear();
             }
+            
             
             %>
              
@@ -323,6 +326,9 @@
             </table>    
             
             <% 
+            
+            
+            
                 // no results and source language is english
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
