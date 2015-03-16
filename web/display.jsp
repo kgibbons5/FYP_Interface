@@ -469,5 +469,11 @@
             <% } %>
             </table>     
             <% } %>
+            
+            <% if(translations.isEmpty() && translations_syn.isEmpty()){
+            %> 
+            <p><b>No data found</b></p>
+            <% } %>
+            
     </body>
 </html>
