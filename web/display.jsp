@@ -292,14 +292,19 @@
                 translation_ids.clear();
             }
             
-            
             %>
              
             <a href="index.jsp"><button> Back </button></a>    
             <p>
             <p>
-                
-            <table class="mytable" border="1">
+            <% if(!translations.isEmpty()){
+            %>    
+             <table class="mytable" border="1">
+                    <thead>
+                    <tr>
+                        <th colspan="2">Terms and their Translations </th>
+                    </tr>
+                    </thead>
             <% 
             for(Map.Entry<String, String> entry: translations.entries()) { 
                 String holder[] = new String[4];
@@ -324,11 +329,9 @@
                     
             <% } %>
             </table>    
+            <% } %>
             
             <% 
-            
-            
-            
                 // no results and source language is english
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
@@ -423,9 +426,9 @@
                                     translations_syn.put(term_1,hold);
                                 }
                             }
-                        }   
+                        } 
+                         // clear map so no duplicate values
                         translation_syn_ids.clear();
-
                     }
                 }
 //                else{
@@ -435,11 +438,12 @@
             <p>
             <p>
             <p>
-                
+            <% if(!translations_syn.isEmpty()){
+            %>
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Synonyms and their translations </th>
+                        <th colspan="2">Synonyms and their Translations </th>
                     </tr>
                     </thead>
                     <% 
@@ -463,6 +467,7 @@
                         <td  colspan="2"></td>
                     </tr>   
             <% } %>
-            </table>                 
+            </table>     
+            <% } %>
     </body>
 </html>
