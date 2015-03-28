@@ -20,6 +20,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="org.tartarus.snowball.*"%>
+<%@page import="java.util.regex.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.sql.*"%>
 <% Class.forName("com.mysql.jdbc.Driver"); %>
@@ -176,6 +177,7 @@
                 }
                 return rs;
             }
+   
         }
           
         %>
@@ -202,18 +204,32 @@
             out.println("Source term is " +src_term);
             out.println("Source language id is " +src_lang);
             
-            //check source language for the stemmer
+            //check source language for stopword and the stemmer
             Translate t = new Translate();
             boolean english = t.checkEnglishTerm(src_lang);
             if(english){
-                englishStemmer stemmer = new englishStemmer();
-                stemmer.setCurrent(src_term);
-                if(stemmer.stem()){
-                    src_term = stemmer.getCurrent();
-                    out.println("!!!!!!!Stemmed word is: "+src_term);
-                }
+                
+                Pattern stopWords = Pattern.compile("\\b(?:at|of|no|with|a|an|to|in|for|the|and|be|is|by)\\b\\s*", Pattern.CASE_INSENSITIVE);
+                Matcher matcher = stopWords.matcher(src_term);
+                src_term = matcher.replaceAll("");
+                 out.println("!!!!!!!After stopword removal word is: "+src_term);
+                 
+                if(src_term!=null){
+                    englishStemmer stemmer = new englishStemmer();
+                    stemmer.setCurrent(src_term);
+                    if(stemmer.stem()){
+                        src_term = stemmer.getCurrent();
+                        out.println("!!!!!!!Stemmed word is: "+src_term);
+                    }
+                }    
             }
+            
+            if(src_term!=null){
 
+            
+            
+            
+            
             ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
             ResultSet rs_trans_syn=null;
@@ -300,6 +316,16 @@
                 }
                 // clear map so no duplicate values
                 translation_ids.clear();
+            }
+            
+            
+            }//if
+            
+            
+            
+            else{
+                    out.println("Invalid term, try again");
+                    
             }
             
             %>
