@@ -203,22 +203,17 @@
             out.println("Source language id is " +src_lang);
             
             //check source language for the stemmer
-//            Translate t1 = new Translate();
-//            boolean english = t1.checkEnglishTerm(src_lang);
-//            if(english){
-//                englishStemmer stemmer = new englishStemmer();
-//                stemmer.setCurrent(src_term);
-//                if(stemmer.stem()){
-//                    src_term = stemmer.getCurrent();
-//                    out.println("!!!!!!!Stemmed word is: "+src_term);
-//                }
-//            }
-            
-            
-            
-            
-            
             Translate t = new Translate();
+            boolean english = t.checkEnglishTerm(src_lang);
+            if(english){
+                englishStemmer stemmer = new englishStemmer();
+                stemmer.setCurrent(src_term);
+                if(stemmer.stem()){
+                    src_term = stemmer.getCurrent();
+                    out.println("!!!!!!!Stemmed word is: "+src_term);
+                }
+            }
+
             ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
             ResultSet rs_trans_syn=null;
