@@ -182,6 +182,7 @@
           
         %>
         <%
+            String org_src_term = null;
             String src_term = null;
             long src_lang=0;
             long targ_lang=0;
@@ -190,7 +191,7 @@
             String syn=null;
             
             if(request.getParameter("source_term") != null){
-                src_term = request.getParameter("source_term");
+                org_src_term = request.getParameter("source_term");
             }
             
             if(request.getParameter("source_language") != null){
@@ -202,8 +203,8 @@
             }
 
             
-            //check if empty or white spaces   src_term.length()==0
-            if(src_term==null || src_term.trim().isEmpty()){
+            //check if empty or white spaces   org_src_term.length()==0
+            if(org_src_term==null || org_src_term.trim().isEmpty()){
                 
                 out.println("Invalid term, try again");
                  %>
@@ -217,7 +218,7 @@
             }//if
             else{
              
-            out.println("Source term is " +src_term);
+            out.println("Source term is " +org_src_term);
             out.println("Source language id is " +src_lang);
            
             
@@ -227,11 +228,11 @@
             if(english){
                 
                 Pattern stopWords = Pattern.compile("\\b(?:at|of|no|with|a|an|to|in|for|the|and|be|is|by)\\b\\s*", Pattern.CASE_INSENSITIVE);
-                Matcher matcher = stopWords.matcher(src_term);
+                Matcher matcher = stopWords.matcher(org_src_term);
                 src_term = matcher.replaceAll("");
-                 out.println("!!!!!!!After stopword removal word is: "+src_term);
+                out.println("!!!!!!!After stopword removal word is: "+src_term);
                  
-                if(src_term!=null){
+                if(src_term!=null && !src_term.trim().isEmpty()){
                     englishStemmer stemmer = new englishStemmer();
                     stemmer.setCurrent(src_term);
                     if(stemmer.stem()){
@@ -380,7 +381,7 @@
                 // no results and source language is english
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
-                    out.println("No match found for term: "+src_term+" searching for synonyms");
+                    out.println("No match found for term: "+org_src_term+" searching for synonyms");
                     rs_syn_id = t.checkSynonyms(src_term);
                     
                     if(!rs_syn_id.isBeforeFirst())
