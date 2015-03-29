@@ -241,13 +241,7 @@
                     }
                 }    
             }
-            
-           
-                    
-                    
-            
-            
-            
+
             ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
             ResultSet rs_trans_syn=null;
@@ -349,7 +343,7 @@
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Terms and their Translations </th>
+                        <th colspan="2">Source Terms and their Translations </th>
                     </tr>
                     </thead>
             <% 
@@ -359,7 +353,8 @@
      
             %>
                     <tr>
-                        <td colspan="2"><%= holder[3]%></td>                       
+                        <td colspan="1">Source Term: <%=org_src_term%></td>
+                        <td colspan="1">Context: <%= holder[3]%></td>                       
                     </tr>
                     <tr>
                         <td class ="lang"><%= holder[0] %></td>
@@ -480,8 +475,49 @@
                     }
                 }//
                 
-             }
+             
             %>
+            
+            <p>
+            <p>
+            <p>
+                
+            <% if(!translations_syn.isEmpty()){
+            %>
+              <table class="mytable" border="1">
+                     <thead>
+                     <tr>
+                        <th colspan="1">Synonym</th>
+                        <th colspan="1">Translations </th>
+                     </tr>
+                     </thead>
+                     <% 
+                         for(Map.Entry<String, String> entry: translations_syn.entries()) { 
+                             String holder[] = new String[5];
+                             holder = entry.getValue().split(",");         
+                     %>
+                     <tr>
+                         <td>Synonym: <%= holder[4]%></td>
+                         <td>Context:  <%= holder[3]%></td>                        
+                     </tr>
+                     <tr>
+                         <td class ="lang"><%= holder[0] %></td>
+                         <td class ="term"><%= entry.getKey() %></td>
+                     </tr>
+                      <tr>
+                         <td><%= holder[2]%></td>
+                         <td><%= holder[1]%></td>   
+                     </tr>   
+                      <tr>
+                         <td  colspan="2"></td>
+                     </tr>   
+             <% } %>
+            </table>                 
+            </table>     
+            <% } 
+            }%>
+     </body>
+ </html>
             
     </body>
 </html>
