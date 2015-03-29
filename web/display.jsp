@@ -182,7 +182,7 @@
           
         %>
         <%
-            String src_term = new String();
+            String src_term = null;
             long src_lang=0;
             long targ_lang=0;
             long source_id=0;
@@ -197,12 +197,29 @@
                 src_lang =  Integer.parseInt(request.getParameter("source_language"));
             }
             
-             if(request.getParameter("target_language") != null){
+            if(request.getParameter("target_language") != null){
                 targ_lang =  Integer.parseInt(request.getParameter("target_language"));
             }
 
+            
+            //check if empty or white spaces   src_term.length()==0
+            if(src_term==null || src_term.trim().isEmpty()){
+                
+                out.println("Invalid term, try again");
+                 %>
+       
+                 <p>
+                 <p>
+                 <a href="index.jsp"><button> Back </button></a>    
+                
+             <%
+                
+            }//if
+            else{
+             
             out.println("Source term is " +src_term);
             out.println("Source language id is " +src_lang);
+           
             
             //check source language for stopword and the stemmer
             Translate t = new Translate();
@@ -224,9 +241,9 @@
                 }    
             }
             
-            if(src_term!=null){
-
-            
+           
+                    
+                    
             
             
             
@@ -319,14 +336,7 @@
             }
             
             
-            }//if
-            
-            
-            
-            else{
-                    out.println("Invalid term, try again");
-                    
-            }
+         
             
             %>
              
@@ -468,6 +478,8 @@
                         }
                     }
                 }//
+                
+             }
             %>
             
     </body>
