@@ -31,7 +31,7 @@
         <p>
         <p>  
         <p>Search by Category</p>
-        <a href="searchTerm.jsp"><button>Search </button></a>
+        <a href="searchCategory.jsp"><button>Search </button></a>
         
     </body>
 </html>
