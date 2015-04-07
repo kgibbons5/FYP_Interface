@@ -74,7 +74,30 @@
                 }
             }
             
-            
+            public String getCat(long cat_id){
+                
+                String cat=null;
+                
+                try{
+             
+                    pst = con.prepareStatement("Select category from categories where categories.id = ?");
+                    pst.setLong(1, cat_id);
+                   
+                    
+                    rs = pst.executeQuery();
+                    
+                    if(rs.next()) {  
+                        cat = rs.getString(1);
+                    }
+   
+                }
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+                
+                return cat;
+                
+            }
             
             
             public ResultSet getID(long lang_id, long cat_id){
@@ -142,7 +165,8 @@
             }
 
             
-            
+            String category = c.getCat(category_id);
+            out.println("category is " +category);
             ResultSet rs_src_ids = c.getID(src_lang, category_id);
             
             while(rs_src_ids.next()){
@@ -200,8 +224,39 @@
             {
                 out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
             }
+            %>
             
-
+            
+            <% if(!terms.isEmpty()){
+            %>    
+             <table class="mytable" border="1">
+                    <thead>
+                    <tr>
+                        <th colspan="2">Category Translations </th>
+                    </tr>
+                    </thead>
+            <% 
+            for(Map.Entry<String, String> entry: terms.entries()) { 
+                   
+     
+            %>
+                    <tr>
+                        <td>Category</td>
+                        <td><%=category%></td>
+                    </tr>
+            
+                    <tr>
+                        <td>Source Term</td>
+                        <td><%= entry.getKey() %></td>
+                    </tr>
+                     <tr>
+                        <td>Target Term</td>
+                        <td><%= entry.getValue() %></td>
+                    </tr> 
+                    
+            <% } %>
+            </table>    
+            <% }    
         %>
         
         
