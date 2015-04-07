@@ -19,19 +19,27 @@
             th, td{
                 padding: 5px;
             }
+            .button{
+               font-size: 15px;
+                
+            }
+            
         </style>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Glossaries</title>
     </head>
         <body bgcolor="#FFFFDF">
         <h1>Search Options</h1>
-        <p>Search by Term</p>
-        <a href="searchTerm.jsp"><button>Search </button></a>
+        <p><font size="4">Search by Term &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </font><a href="searchTerm.jsp"><button class="button">Search </button></a>
+        </p>
+        <p>
+        <p>
         <p>
         <p>
         <p>  
-        <p>Search by Category</p>
-        <a href="searchCategory.jsp"><button>Search </button></a>
+        <p><font size="4">Search by Category &nbsp; </font><a href="searchCategory.jsp"><button class="button">Search </button></a>
+        </p>
+        
         
     </body>
 </html>
