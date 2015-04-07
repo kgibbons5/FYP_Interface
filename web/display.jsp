@@ -121,11 +121,15 @@
             }
             
             
-            public ResultSet checkSynonyms(String term){
+            public ResultSet checkSynonyms(String term, long src_lang, long targ_lang){
                 
                 try{
-                    pst = con.prepareStatement("Select * from synonyms where synonym like ?");
+                    pst = con.prepareStatement("Select * From synonyms Inner Join terms_has_synonyms On terms_has_synonyms.synonyms_id = synonyms.id Inner Join terms On terms_has_synonyms.terms_id = terms.id Inner Join translations On translations.src_term_id = terms.id Or translations.targ_term_id = terms.id Where (synonyms.synonym Like ? And translations.src_term_id = ? And translations.targ_term_id = ?) Or (translations.src_term_id = ? And translations.targ_term_id = ?)");
                     pst.setString(1, "%" +term+ "%");
+                    pst.setLong(2, src_lang);
+                    pst.setLong(3, targ_lang);
+                    pst.setLong(4, targ_lang);
+                    pst.setLong(5, src_lang);
                     rs = pst.executeQuery();
                 }
                 catch(SQLException e){
@@ -380,7 +384,7 @@
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
                     out.println("No match found for term: "+org_src_term+" searching for synonyms");
-                    rs_syn_id = t.checkSynonyms(src_term);
+                    rs_syn_id = t.checkSynonyms(src_term,src_lang, targ_lang);
                     
                     if(!rs_syn_id.isBeforeFirst())
                     {
