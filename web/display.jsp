@@ -241,6 +241,9 @@
                     }
                 }    
             }
+            else{
+                src_term = org_src_term;
+            }
 
             ResultSet rs_ids = t.getTermID(src_lang, src_term);
             ResultSet rs_trans=null;
