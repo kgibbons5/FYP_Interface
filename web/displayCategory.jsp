@@ -119,20 +119,29 @@
             
             
             public ResultSet getTerms(long src_id, long targ_id){
-                
+                           
                 try{
              
-                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id Or translations.targ_term_id = terms.id, terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where terms.id = ? And terms1.id = ?");
+                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id or translations.targ_term_id = terms.id,  terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where translations.src_term_id = ? and translations.targ_term_id = ? AND terms.id= ? AND terms1.id =?");
                     pst.setLong(1, src_id);
                     pst.setLong(2, targ_id);
+                    pst.setLong(3, src_id);
+                    pst.setLong(4, targ_id);
                     
                     rs = pst.executeQuery();
+                    
+                    
+                     
    
                 }
                 catch(SQLException e){
                     e.printStackTrace();
                 }
+                
                 return rs;
+                
+                
+                
             }
             
           
@@ -206,7 +215,13 @@
             for(Map.Entry<Long, Long> entry: term_ids.entries())
             {
                 out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-                rs_terms=c.getTerms(entry.getKey(), entry.getValue());
+                rs_terms =c.getTerms(entry.getKey(), entry.getValue());
+                
+//                String holder[] = new String[2];
+//                holder = term_holder.split(",");
+                
+               // terms.put(holder[0],holder[1])
+                out.println("BEFORE      ");
                 
                 while(rs_terms.next())
                 {
@@ -214,9 +229,10 @@
                               
                     String term_1 = rs_terms.getString(1);
                     String term_2 = rs_terms.getString(2);
+                    out.println("term is 1 "+term_1+" term 2 is "+term_2);
                     terms.put(term_1, term_2);
                 }
-                
+                out.println("AFTER      ");
             }
             
             
