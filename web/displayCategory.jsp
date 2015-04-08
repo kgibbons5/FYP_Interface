@@ -118,7 +118,7 @@
             }
             
             
-            public ResultSet getTerms(long src_id, long targ_id){
+            public ResultSet getTermsSrc(long src_id, long targ_id){
                            
                 try{
              
@@ -139,11 +139,34 @@
                 }
                 
                 return rs;
-                
-                
-                
+                     
             }
             
+            
+             public ResultSet getTermsTarg(long src_id, long targ_id){
+                           
+                try{
+             
+                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id or translations.targ_term_id = terms.id,  terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where translations.src_term_id = ? and translations.targ_term_id = ? AND terms.id= ? AND terms1.id =?");
+                    pst.setLong(1, src_id);
+                    pst.setLong(2, targ_id);
+                    pst.setLong(3, targ_id);
+                    pst.setLong(4, src_id);
+            
+                    
+                    rs = pst.executeQuery();
+                    
+                    
+                     
+   
+                }
+                catch(SQLException e){
+                    e.printStackTrace();
+                }
+                
+                return rs;
+                     
+            }
           
             
             
@@ -157,8 +180,11 @@
             List<Long> src_ids = new ArrayList<Long>();
             List<Long> targ_ids = new ArrayList<Long>();
             Multimap <Long, Long> term_ids = ArrayListMultimap.create();
-            Multimap <String, String> terms = ArrayListMultimap.create();
-            ResultSet rs_terms=null;
+            Multimap <String, String> terms_src = ArrayListMultimap.create();
+            Multimap <String, String> terms_targ = ArrayListMultimap.create();
+            ResultSet rs_terms_src=null;
+            ResultSet rs_terms_targ=null;
+            
 
 
             if(request.getParameter("category") != null){
@@ -215,7 +241,8 @@
             for(Map.Entry<Long, Long> entry: term_ids.entries())
             {
                 out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-                rs_terms =c.getTerms(entry.getKey(), entry.getValue());
+                rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
+                rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
                 
 //                String holder[] = new String[2];
 //                holder = term_holder.split(",");
@@ -223,36 +250,55 @@
                // terms.put(holder[0],holder[1])
                 out.println("BEFORE      ");
                 
-                while(rs_terms.next())
+                while(rs_terms_src.next())
+                {
+                    //out.println("  in rs_trans");
+                              
+                    String term_1 = rs_terms_src.getString(1);
+                    String term_2 = rs_terms_src.getString(2);
+                    //out.println("term is 1 "+term_1+" term 2 is "+term_2);
+                    terms_src.put(term_1, term_2);
+                }
+                
+                
+                while(rs_terms_targ.next())
                 {
                     out.println("  in rs_trans");
                               
-                    String term_1 = rs_terms.getString(1);
-                    String term_2 = rs_terms.getString(2);
+                    String term_1 = rs_terms_targ.getString(1);
+                    String term_2 = rs_terms_targ.getString(2);
                     out.println("term is 1 "+term_1+" term 2 is "+term_2);
-                    terms.put(term_1, term_2);
+                    terms_targ.put(term_1, term_2);
                 }
+                
+                
                 out.println("AFTER      ");
             }
             
             
-            for(Map.Entry<String, String> entry: terms.entries())
+            for(Map.Entry<String, String> entry: terms_src.entries())
+            {
+                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+            }
+             for(Map.Entry<String, String> entry: terms_targ.entries())
             {
                 out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
             }
             %>
             
+          
             
-            <% if(!terms.isEmpty()){
+            
+            <% if(!terms_src.isEmpty()){
             %>    
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Category Translations </th>
+                        <th colspan="2">Source Category Translations </th>
                     </tr>
                     </thead>
             <% 
-            for(Map.Entry<String, String> entry: terms.entries()) { 
+            for(Map.Entry<String, String> entry: terms_src.entries()) { 
                    
      
             %>
@@ -272,27 +318,44 @@
                     
             <% } %>
             </table>    
-            <% }    
-        %>
+            <% } else if(!terms_targ.isEmpty()){%>
+            
+            %>    
+             <table class="mytable" border="1">
+                    <thead>
+                    <tr>
+                        <th colspan="2">Target Category Translations </th>
+                    </tr>
+                    </thead>
+            <% 
+            for(Map.Entry<String, String> entry: terms_targ.entries()) { 
+                   
+     
+            %>
+                    <tr>
+                        <td>Category</td>
+                        <td><%=category%></td>
+                    </tr>
+            
+                    <tr>
+                        <td>Source Term</td>
+                        <td><%= entry.getKey() %></td>
+                    </tr>
+                     <tr>
+                        <td>Target Term</td>
+                        <td><%= entry.getValue() %></td>
+                    </tr> 
+                    
+            <% } %>
+            </table>    
+            <% } else{
+            
+                out.println("No results");
+            
+            }%>
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+       
         
     </body>
 </html>
