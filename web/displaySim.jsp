@@ -96,6 +96,7 @@
         
         long threshold=0;
         long accepted=0;
+        //long sim=0;
         Similarity s = new Similarity();
         ResultSet terms=null;
         ResultSet term_ids=null;
@@ -113,8 +114,9 @@
         while(term_ids.next()){
             long id_1 = term_ids.getLong(1);
             long id_2 = term_ids.getLong(2);
-            long similarity = term_ids.getLong(3);
-            String hold = ""+id_2+","+similarity;
+            long sim = term_ids.getLong(3);
+            out.println("sim" +sim); ///why wont you work!!!
+    
             
             terms=s.getTerm(id_1, id_2);
             
@@ -137,7 +139,7 @@
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Source Category Translations </th>
+                        <th colspan="2">Similarities </th>
                     </tr>
                     </thead>
             <% 
@@ -147,7 +149,7 @@
             %>
                     <tr>
                         <td>Similiarity Score</td>
-                        <td><%=threshold%></td>
+                        <td>simvariable</td>
                     </tr>
             
                     <tr>
