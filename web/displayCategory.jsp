@@ -232,17 +232,9 @@
                 
                 for(int j=0; j<targ_ids.size(); j++)
                 {
-                    term_ids.put(src_ids.get(i), targ_ids.get(j));
-                    
-                }        
-            
-            }
-            
-            for(Map.Entry<Long, Long> entry: term_ids.entries())
-            {
-                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-                rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
-                rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
+                    //term_ids.put(src_ids.get(i), targ_ids.get(j));
+                    rs_terms_src =c.getTermsSrc(src_ids.get(i), targ_ids.get(j));
+                    rs_terms_targ = c.getTermsTarg(targ_ids.get(i),src_ids.get(j));
                 
 //                String holder[] = new String[2];
 //                holder = term_holder.split(",");
@@ -270,20 +262,57 @@
                     out.println("term is 1 "+term_1+" term 2 is "+term_2);
                     terms_targ.put(term_1, term_2);
                 }
-                
-                
-                out.println("AFTER      ");
+                    
+                }        
+            
             }
             
+//            for(Map.Entry<Long, Long> entry: term_ids.entries())
+//            {
+//                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+//                rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
+//                rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
+//                
+////                String holder[] = new String[2];
+////                holder = term_holder.split(",");
+//                
+//               // terms.put(holder[0],holder[1])
+//                out.println("BEFORE      ");
+//                
+//                while(rs_terms_src.next())
+//                {
+//                    //out.println("  in rs_trans");
+//                              
+//                    String term_1 = rs_terms_src.getString(1);
+//                    String term_2 = rs_terms_src.getString(2);
+//                    //out.println("term is 1 "+term_1+" term 2 is "+term_2);
+//                    terms_src.put(term_1, term_2);
+//                }
+//                
+//                
+//                while(rs_terms_targ.next())
+//                {
+//                    out.println("  in rs_trans");
+//                              
+//                    String term_1 = rs_terms_targ.getString(1);
+//                    String term_2 = rs_terms_targ.getString(2);
+//                    out.println("term is 1 "+term_1+" term 2 is "+term_2);
+//                    terms_targ.put(term_1, term_2);
+//                }
+//                
+//                
+//                out.println("AFTER      ");
+//            }
             
-            for(Map.Entry<String, String> entry: terms_src.entries())
-            {
-                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-            }
-             for(Map.Entry<String, String> entry: terms_targ.entries())
-            {
-                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-            }
+            
+//            for(Map.Entry<String, String> entry: terms_src.entries())
+//            {
+//                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+//            }
+//             for(Map.Entry<String, String> entry: terms_targ.entries())
+//            {
+//                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+//            }
             %>
             
           
