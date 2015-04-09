@@ -224,6 +224,8 @@
             }
             
             
+            if(!src_ids.isEmpty() && !targ_ids.isEmpty()){
+            
              for(int i=0; i<src_ids.size(); i++)
             {
                 
@@ -253,6 +255,7 @@
                     
                 }        
             
+            }
             }
             
             
