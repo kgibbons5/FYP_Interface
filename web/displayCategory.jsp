@@ -185,8 +185,6 @@
             ResultSet rs_terms_src=null;
             ResultSet rs_terms_targ=null;
             
-
-
             if(request.getParameter("category") != null){
                 category_id = Integer.parseInt(request.getParameter("category"));
             }
@@ -198,7 +196,6 @@
             if(request.getParameter("target_language") != null){
                 targ_lang =  Integer.parseInt(request.getParameter("target_language"));
             }
-
             
             String category = c.getCat(category_id);
             out.println("category is " +category);
@@ -234,24 +231,20 @@
                 {
                     rs_terms_src =c.getTermsSrc(src_ids.get(i), targ_ids.get(j));
                     rs_terms_targ = c.getTermsTarg(targ_ids.get(i),src_ids.get(j));
-
                     //out.println("BEFORE      ");
                 
                     while(rs_terms_src.next())
                     {
                         //out.println("  in rs_trans");
-
                         String term_1 = rs_terms_src.getString(1);
                         String term_2 = rs_terms_src.getString(2);
                         //out.println("term is 1 "+term_1+" term 2 is "+term_2);
                         terms_src.put(term_1, term_2);
                     }
-
                 
                     while(rs_terms_targ.next())
                     {
                         out.println("  in rs_trans");
-
                         String term_1 = rs_terms_targ.getString(1);
                         String term_2 = rs_terms_targ.getString(2);
                         out.println("term is 1 "+term_1+" term 2 is "+term_2);
@@ -272,8 +265,13 @@
 //                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
 //            }
             %>
-            
-          
+            <p>
+            <p>     
+            <p>
+            <a href="searchCategory.jsp"><button> Back to Search</button></a>    
+            <p>
+            <p>     
+            <p>
             
             
             <% if(!terms_src.isEmpty()){
@@ -312,6 +310,7 @@
                     <thead>
                     <tr>
                         <th colspan="2">Target Category Translations </th>
+                        <th colspan="2">Category:  <%=category%> </th>
                     </tr>
                     </thead>
             <% 
@@ -319,10 +318,6 @@
                    
      
             %>
-                    <tr>
-                        <td>Category</td>
-                        <td><%=category%></td>
-                    </tr>
             
                     <tr>
                         <td>Source Term</td>
@@ -332,6 +327,9 @@
                         <td>Target Term</td>
                         <td><%= entry.getValue() %></td>
                     </tr> 
+                    <tr>
+                         <td  colspan="2"></td>
+                     </tr> 
                     
             <% } %>
             </table>    
@@ -340,9 +338,5 @@
                 out.println("No results");
             
             }%>
-        
-        
-       
-        
     </body>
 </html>
