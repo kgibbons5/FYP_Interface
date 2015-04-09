@@ -122,7 +122,7 @@
                            
                 try{
              
-                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id or translations.targ_term_id = terms.id,  terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where translations.src_term_id = ? and translations.targ_term_id = ? AND terms.id= ? AND terms1.id =?");
+                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id or translations.targ_term_id = terms.id,  terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where translations.src_term_id = ? and translations.targ_term_id = ? AND terms.id= ? AND terms1.id =? limit 1");
                     pst.setLong(1, src_id);
                     pst.setLong(2, targ_id);
                     pst.setLong(3, src_id);
@@ -147,7 +147,7 @@
                            
                 try{
              
-                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id or translations.targ_term_id = terms.id,  terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where translations.src_term_id = ? and translations.targ_term_id = ? AND terms.id= ? AND terms1.id =?");
+                    pst = con.prepareStatement("Select terms.term, terms1.term As term1 From terms Inner Join translations On translations.src_term_id = terms.id or translations.targ_term_id = terms.id,  terms terms1 Inner Join translations translations1 On translations1.src_term_id = terms1.id Or translations1.targ_term_id = terms1.id Where translations.src_term_id = ? and translations.targ_term_id = ? AND terms.id= ? AND terms1.id =? limit 1");
                     pst.setLong(1, src_id);
                     pst.setLong(2, targ_id);
                     pst.setLong(3, targ_id);
@@ -212,69 +212,46 @@
                 targ_ids.add(id);
             }
             
+         
+            //had to loop over map as it was throwing array index out of bounds!!
             
             for(int i=0; i<src_ids.size(); i++)
-            {
-                out.println("src Id is " +src_ids.get(i));
-            }
-            
-            for(int i=0; i<targ_ids.size(); i++)
-            {
-                out.println("targ Id is " +targ_ids.get(i));
-            }
-            
-            
-            if(!src_ids.isEmpty() && !targ_ids.isEmpty()){
-            
-             for(int i=0; i<src_ids.size(); i++)
             {
                 
                 for(int j=0; j<targ_ids.size(); j++)
                 {
-                    rs_terms_src =c.getTermsSrc(src_ids.get(i), targ_ids.get(j));
-                    rs_terms_targ = c.getTermsTarg(targ_ids.get(i),src_ids.get(j));
-                    //out.println("BEFORE      ");
-                
-                    while(rs_terms_src.next())
-                    {
-                        //out.println("  in rs_trans");
-                        String term_1 = rs_terms_src.getString(1);
-                        String term_2 = rs_terms_src.getString(2);
-                        //out.println("term is 1 "+term_1+" term 2 is "+term_2);
-                        terms_src.put(term_1, term_2);
-                    }
-                
-                    while(rs_terms_targ.next())
-                    {
-                        out.println("  in rs_trans");
-                        String term_1 = rs_terms_targ.getString(1);
-                        String term_2 = rs_terms_targ.getString(2);
-                        out.println("term is 1 "+term_1+" term 2 is "+term_2);
-                        terms_targ.put(term_1, term_2);
-                    }
+                    term_ids.put(src_ids.get(i), targ_ids.get(j));
                     
                 }        
             
             }
+            
+            for(Map.Entry<Long, Long> entry: term_ids.entries())
+            {
+                rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
+                rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
+                
+                
+                while(rs_terms_src.next())
+                {
+                              
+                    String term_1 = rs_terms_src.getString(1);
+                    String term_2 = rs_terms_src.getString(2);
+                    terms_src.put(term_1, term_2);
+                }
+                
+                
+                while(rs_terms_targ.next())
+                {
+                    String term_1 = rs_terms_targ.getString(1);
+                    String term_2 = rs_terms_targ.getString(2);
+                    terms_targ.put(term_1, term_2);
+                }
             }
-            
-            
-//            for(Map.Entry<String, String> entry: terms_src.entries())
-//            {
-//                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-//            }
-//             for(Map.Entry<String, String> entry: terms_targ.entries())
-//            {
-//                out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
-//            }
+
             %>
-            <p>
-            <p>     
-            <p>
-            <a href="searchCategory.jsp"><button> Back to Search</button></a>    
-            <p>
-            <p>     
-            <p>
+            
+          
             
             
             <% if(!terms_src.isEmpty()){
@@ -313,7 +290,6 @@
                     <thead>
                     <tr>
                         <th colspan="2">Target Category Translations </th>
-                        <th colspan="2">Category:  <%=category%> </th>
                     </tr>
                     </thead>
             <% 
@@ -321,6 +297,10 @@
                    
      
             %>
+                    <tr>
+                        <td>Category</td>
+                        <td><%=category%></td>
+                    </tr>
             
                     <tr>
                         <td>Source Term</td>
@@ -330,9 +310,6 @@
                         <td>Target Term</td>
                         <td><%= entry.getValue() %></td>
                     </tr> 
-                    <tr>
-                         <td  colspan="2"></td>
-                     </tr> 
                     
             <% } %>
             </table>    
@@ -341,5 +318,9 @@
                 out.println("No results");
             
             }%>
+        
+        
+       
+        
     </body>
 </html>
