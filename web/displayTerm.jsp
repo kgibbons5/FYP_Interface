@@ -401,7 +401,7 @@
                             rs_syn_term_id= t.linkTermSynonym(syn_id);
 
                         }
-
+                        rs_syn_id=null;
                         while(rs_syn_term_id.next())
                         {
                             long term_id = rs_syn_term_id.getLong(1);
@@ -494,8 +494,7 @@
               <table class="mytable" border="1">
                      <thead>
                      <tr>
-                        <th colspan="1">Synonym</th>
-                        <th colspan="1">Translations </th>
+                         <th colspan="2">Synonyms and their Translations </th>
                      </tr>
                      </thead>
                      <% 
