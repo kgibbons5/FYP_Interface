@@ -129,20 +129,14 @@
                     pst.setLong(4, targ_id);
                     
                     rs = pst.executeQuery();
-                    
-                    
-                     
-   
                 }
                 catch(SQLException e){
                     e.printStackTrace();
                 }
                 
-                return rs;
-                     
+                return rs;        
             }
-            
-            
+ 
              public ResultSet getTermsTarg(long src_id, long targ_id){
                            
                 try{
@@ -156,9 +150,6 @@
                     
                     rs = pst.executeQuery();
                     
-                    
-                     
-   
                 }
                 catch(SQLException e){
                     e.printStackTrace();
@@ -184,6 +175,8 @@
             Multimap <String, String> terms_targ = ArrayListMultimap.create();
             ResultSet rs_terms_src=null;
             ResultSet rs_terms_targ=null;
+            ResultSet check_src=null;
+            ResultSet check_targ=null;
             
             if(request.getParameter("category") != null){
                 category_id = Integer.parseInt(request.getParameter("category"));
@@ -226,32 +219,71 @@
             
             }
             
-            for(Map.Entry<Long, Long> entry: term_ids.entries())
-            {
-                rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
-                rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
-                
-                
-                while(rs_terms_src.next())
+            check_src = c.getTermsSrc(src_ids.get(0), targ_ids.get(0));
+            check_targ = c.getTermsTarg(targ_ids.get(0),src_ids.get(0));
+            
+            //if(check_src!=null)
+            if(check_src.isBeforeFirst()){
+                //not empty
+                for(Map.Entry<Long, Long> entry: term_ids.entries())
                 {
-                              
-                    String term_1 = rs_terms_src.getString(1);
-                    String term_2 = rs_terms_src.getString(2);
-                    terms_src.put(term_1, term_2);
-                }
-                
-                
-                while(rs_terms_targ.next())
-                {
-                    String term_1 = rs_terms_targ.getString(1);
-                    String term_2 = rs_terms_targ.getString(2);
-                    terms_targ.put(term_1, term_2);
+
+                    //check if first empty no point looping over rest?
+                    rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
+                    while(rs_terms_src.next())
+                    {
+
+                        String term_1 = rs_terms_src.getString(1);
+                        String term_2 = rs_terms_src.getString(2);
+                        terms_src.put(term_1, term_2);
+                    }
                 }
             }
+            if(check_targ.isBeforeFirst()){
+                
+                for(Map.Entry<Long, Long> entry: term_ids.entries())
+                {
+                    rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
+                    while(rs_terms_targ.next())
+                    {
+                        String term_1 = rs_terms_targ.getString(1);
+                        String term_2 = rs_terms_targ.getString(2);
+                        terms_targ.put(term_1, term_2);
+                    }
+                }
+                
+            }
+            
+//            for(Map.Entry<Long, Long> entry: term_ids.entries())
+//            {
+//                
+//                //check if first empty no point looping over rest?
+//                rs_terms_src =c.getTermsSrc(entry.getKey(), entry.getValue());
+//                rs_terms_targ = c.getTermsTarg(entry.getValue(),  entry.getKey());
+//                
+//                
+//                while(rs_terms_src.next())
+//                {
+//                              
+//                    String term_1 = rs_terms_src.getString(1);
+//                    String term_2 = rs_terms_src.getString(2);
+//                    terms_src.put(term_1, term_2);
+//                }
+//                
+//                
+//                while(rs_terms_targ.next())
+//                {
+//                    String term_1 = rs_terms_targ.getString(1);
+//                    String term_2 = rs_terms_targ.getString(2);
+//                    terms_targ.put(term_1, term_2);
+//                }
+//            }
 
             %>
             
-          
+          <a href="searchCategory.jsp"><button> Back To Search </button></a>    
+             <p>
+            <p>
             
             
             <% if(!terms_src.isEmpty()){
@@ -259,7 +291,7 @@
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Source Category Translations </th>
+                        <th colspan="2">Category:  <%=category%> </th>
                     </tr>
                     </thead>
             <% 
@@ -267,11 +299,7 @@
                    
      
             %>
-                    <tr>
-                        <td>Category</td>
-                        <td><%=category%></td>
-                    </tr>
-            
+                             
                     <tr>
                         <td>Source Term</td>
                         <td><%= entry.getKey() %></td>
@@ -279,6 +307,9 @@
                      <tr>
                         <td>Target Term</td>
                         <td><%= entry.getValue() %></td>
+                    </tr> 
+                    <tr>
+                         <td  colspan="2"></td>
                     </tr> 
                     
             <% } %>
@@ -289,19 +320,14 @@
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Target Category Translations </th>
+                       <th colspan="2">Category:  <%=category%> </th>
                     </tr>
                     </thead>
             <% 
             for(Map.Entry<String, String> entry: terms_targ.entries()) { 
                    
      
-            %>
-                    <tr>
-                        <td>Category</td>
-                        <td><%=category%></td>
-                    </tr>
-            
+            %>            
                     <tr>
                         <td>Source Term</td>
                         <td><%= entry.getKey() %></td>
@@ -309,6 +335,9 @@
                      <tr>
                         <td>Target Term</td>
                         <td><%= entry.getValue() %></td>
+                    </tr> 
+                    <tr>
+                         <td  colspan="2"></td>
                     </tr> 
                     
             <% } %>
@@ -318,9 +347,6 @@
                 out.println("No results");
             
             }%>
-        
-        
-       
-        
+
     </body>
 </html>
