@@ -124,7 +124,7 @@
             public ResultSet checkSynonyms(String term, long src_lang, long targ_lang){
                 
                 try{
-                    pst = con.prepareStatement("Select * From synonyms Inner Join terms_has_synonyms On terms_has_synonyms.synonyms_id = synonyms.id Inner Join terms On terms_has_synonyms.terms_id = terms.id Inner Join translations On translations.src_term_id = terms.id Or translations.targ_term_id = terms.id Where (synonyms.synonym Like ? And translations.src_term_id = ? And translations.targ_term_id = ?) Or (translations.src_term_id = ? And translations.targ_term_id = ?)");
+                    pst = con.prepareStatement("Select * From synonyms Inner Join terms_has_synonyms On terms_has_synonyms.synonyms_id = synonyms.id Inner Join terms On terms_has_synonyms.terms_id = terms.id Inner Join translations On translations.src_term_id = terms.id Or translations.targ_term_id = terms.id Where (synonyms.synonym Like ? And translations.src_term_id = ? And translations.targ_term_id = ?) Or (translations.src_term_id = ? And translations.targ_term_id = ?)limit 1");
                     pst.setString(1, "%" +term+ "%");
                     pst.setLong(2, src_lang);
                     pst.setLong(3, targ_lang);
@@ -215,7 +215,7 @@
        
                  <p>
                  <p>
-                 <a href="index.jsp"><button> Back </button></a>    
+                 <a href="index.jsp"><button> Back to Index</button></a>    
                 
              <%
                 
@@ -327,7 +327,7 @@
                             String lang_2 = rs_trans.getString(4);
                             String cat = rs_trans.getString(5);
                             String hold = ""+lang_1+","+term_2+","+lang_2+","+cat+"";
-                            
+                            //StringBuilder
                             translations.put(term_1,hold);
                             
                         }
@@ -342,7 +342,7 @@
             
             %>
              
-            <a href="index.jsp"><button> Back </button></a>    
+            <a href="searchTerm.jsp"><button> Back To Search </button></a>    
             <p>
             <p>
             <% if(!translations.isEmpty()){
@@ -350,7 +350,7 @@
              <table class="mytable" border="1">
                     <thead>
                     <tr>
-                        <th colspan="2">Source Terms and their Translations </th>
+                        <th colspan="2">Terms and their Translations </th>
                     </tr>
                     </thead>
             <% 
@@ -361,7 +361,7 @@
             %>
                     <tr>
                         <td colspan="1">Source Term: <%=org_src_term%></td>
-                        <td colspan="1">Context: <%= holder[3]%></td>                       
+                        <td colspan="1">Category: <%= holder[3]%></td>                       
                     </tr>
                     <tr>
                         <td class ="lang"><%= holder[0] %></td>
@@ -384,7 +384,7 @@
                 if(rs_trans == null && t.checkEnglishTerm(src_lang))
                 {
                     out.println("No match found for term: "+org_src_term+" searching for synonyms");
-                    rs_syn_id = t.checkSynonyms(src_term,src_lang, targ_lang);
+                    rs_syn_id = t.checkSynonyms(src_term, src_lang, targ_lang);
                     
                     if(!rs_syn_id.isBeforeFirst())
                     {
@@ -505,7 +505,7 @@
                      %>
                      <tr>
                          <td>Synonym: <%= holder[4]%></td>
-                         <td>Context:  <%= holder[3]%></td>                        
+                         <td>Category:  <%= holder[3]%></td>                        
                      </tr>
                      <tr>
                          <td class ="lang"><%= holder[0] %></td>
@@ -520,7 +520,6 @@
                      </tr>   
              <% } %>
             </table>                 
-            </table>     
             <% } 
             }%>
      </body>
