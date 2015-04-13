@@ -94,6 +94,7 @@
             public ResultSet getTranslationID(long src_term_id,long targ_lang){
                 
                 try{
+                    //pst = con.prepareStatement("select * from translations left join terms on (translations.src_term_id = terms.id or translations.targ_term_id = terms.id)  where (src_term_id = ? or targ_term_id= ?)and terms.language_id=? and similarity_score is null");
                     pst = con.prepareStatement("select * from translations left join terms on (translations.src_term_id = terms.id or translations.targ_term_id = terms.id)  where (src_term_id = ? or targ_term_id= ?)and terms.language_id=?");
                     pst.setLong(1, src_term_id);
                     pst.setLong(2, src_term_id);
@@ -121,15 +122,13 @@
             }
             
             
-            public ResultSet checkSynonyms(String term, long src_lang, long targ_lang){
+            public ResultSet checkSynonyms(String term){
                 
                 try{
-                    pst = con.prepareStatement("Select * From synonyms Inner Join terms_has_synonyms On terms_has_synonyms.synonyms_id = synonyms.id Inner Join terms On terms_has_synonyms.terms_id = terms.id Inner Join translations On translations.src_term_id = terms.id Or translations.targ_term_id = terms.id Where (synonyms.synonym Like ? And translations.src_term_id = ? And translations.targ_term_id = ?) Or (translations.src_term_id = ? And translations.targ_term_id = ?)limit 1");
+                    pst = con.prepareStatement("Select * from synonyms where synonym like ?");
+                    //pst = con.prepareStatement("Select * From synonyms Inner Join terms_has_synonyms On terms_has_synonyms.synonyms_id = synonyms.id Inner Join terms On terms_has_synonyms.terms_id = terms.id Inner Join translations On translations.src_term_id = terms.id Or translations.targ_term_id = terms.id Where (synonyms.synonym Like ? And translations.src_term_id = ? And translations.targ_term_id = ?) Or (translations.src_term_id = ? And translations.targ_term_id = ?)limit 1");
                     pst.setString(1, "%" +term+ "%");
-                    pst.setLong(2, src_lang);
-                    pst.setLong(3, targ_lang);
-                    pst.setLong(4, targ_lang);
-                    pst.setLong(5, src_lang);
+                    //pst.setLong(2, src_lang);
                     rs = pst.executeQuery();
                 }
                 catch(SQLException e){
@@ -159,11 +158,11 @@
                    }
 
                 if(eng_lang==src_lang){
-                    System.out.println("ENGLISH term_id: "+src_lang);
+                    //System.out.println("ENGLISH term_id: "+src_lang);
                     return true;
                 }
                 else{
-                    System.out.println("NOT ENGLISH term_id: "+src_lang);
+                    //System.out.println("NOT ENGLISH term_id: "+src_lang);
                     return false;
                 }
 
@@ -210,7 +209,7 @@
             //check if empty or white spaces   org_src_term.length()==0
             if(org_src_term==null || org_src_term.trim().isEmpty()){
                 
-                out.println("Invalid term, try again");
+                //out.println("Invalid term, try again");
                  %>
        
                  <p>
@@ -222,8 +221,8 @@
             }//if
             else{
              
-            out.println("Source term is " +org_src_term);
-            out.println("Source language id is " +src_lang);
+            //out.println("Source term is " +org_src_term);
+            //out.println("Source language id is " +src_lang);
            
             
             //check source language for stopword and the stemmer
@@ -231,17 +230,17 @@
             boolean english = t.checkEnglishTerm(src_lang);
             if(english){
                 
-                Pattern stopWords = Pattern.compile("\\b(?:at|of|no|with|a|an|to|in|for|the|and|be|is|by)\\b\\s*", Pattern.CASE_INSENSITIVE);
+                Pattern stopWords = Pattern.compile("\\b(?:at|of|no|with|a|an|to|in|for|the|and|be|is|by|of)\\b\\s*", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = stopWords.matcher(org_src_term);
                 src_term = matcher.replaceAll("");
-                out.println("!!!!!!!After stopword removal word is: "+src_term);
+                //out.println("!!!!!!!After stopword removal word is: "+src_term);
                  
                 if(src_term!=null && !src_term.trim().isEmpty()){
                     englishStemmer stemmer = new englishStemmer();
                     stemmer.setCurrent(src_term);
                     if(stemmer.stem()){
                         src_term = stemmer.getCurrent();
-                        out.println("!!!!!!!Stemmed word is: "+src_term);
+                        //out.println("!!!!!!!Stemmed word is: "+src_term);
                     }
                 }    
             }
@@ -273,8 +272,8 @@
             
             for(int i=0; i<ids.size(); i++)
             {
-                out.println("Id is " +ids.get(i));
-                out.println("Target language id is " +targ_lang);
+                //out.println("Id is " +ids.get(i));
+                //out.println("Target language id is " +targ_lang);
                 rs_trans_ids = t.getTranslationID(ids.get(i),targ_lang);
                 
                 while(rs_trans_ids.next())
@@ -288,18 +287,18 @@
          
                 //check if src_term or targ_term in translation table
                 long key = (Long) translation_ids.keySet().toArray()[0];
-                out.println(" THE KEY IS; " +key);
+                //out.println(" THE KEY IS; " +key);
                 
                 for(Map.Entry<Long, Long> entry: translation_ids.entries())
                 {
                     if(ids.get(0)==entry.getKey()){
                         
-                        out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                       // out.println("Source...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getKey(), entry.getValue());
                        
                         while(rs_trans.next())
                         {
-                            out.println("  in rs_trans");
+                           // out.println("  in rs_trans");
                               
                             String term_1 = rs_trans.getString(1);
                             String lang_1 = rs_trans.getString(2);
@@ -314,12 +313,12 @@
                     }
                     else{
                         
-                        out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                        //out.println("Target...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                         rs_trans = t.getTranslation(entry.getValue(),entry.getKey());
                    
                         while(rs_trans.next())
                         {
-                            out.println("  in rs_trans");
+                            //out.println("  in rs_trans");
                               
                             String term_1 = rs_trans.getString(1);
                             String lang_1 = rs_trans.getString(2);
@@ -345,7 +344,12 @@
             <a href="searchTerm.jsp"><button> Back To Search </button></a>    
             <p>
             <p>
-            <% if(!translations.isEmpty()){
+            <% if(src_lang==targ_lang){
+                out.println("Same language selected, try again");
+                
+            }
+            else if(!translations.isEmpty()){
+                
             %>    
              <table class="mytable" border="1">
                     <thead>
@@ -381,10 +385,10 @@
             
             <% 
                 // no results and source language is english
-                if(rs_trans == null && t.checkEnglishTerm(src_lang))
+                if(rs_trans == null && t.checkEnglishTerm(src_lang) )
                 {
                     out.println("No match found for term: "+org_src_term+" searching for synonyms");
-                    rs_syn_id = t.checkSynonyms(src_term, src_lang, targ_lang);
+                    rs_syn_id = t.checkSynonyms(src_term);
                     
                     if(!rs_syn_id.isBeforeFirst())
                     {
@@ -394,10 +398,10 @@
 
                         while(rs_syn_id.next())
                         {
-                            out.println("Synonyms found");
+                            //out.println("Synonyms found");
                             long syn_id = rs_syn_id.getLong(1);
                             syn =  rs_syn_id.getString(2);
-                            out.println("id is "+ syn_id +"   syn is "+syn);
+                            //out.println("id is "+ syn_id +"   syn is "+syn);
                             rs_syn_term_id= t.linkTermSynonym(syn_id);
 
                         }
@@ -405,17 +409,17 @@
                         while(rs_syn_term_id.next())
                         {
                             long term_id = rs_syn_term_id.getLong(1);
-                            out.println(" term id is "+term_id);
+                            //out.println(" term id is "+term_id);
                             term_syn_ids.add(term_id);
                         }
 
-                        out.println("Term_syn_ids size is "+term_syn_ids.size());
+                        //out.println("Term_syn_ids size is "+term_syn_ids.size());
 
                         for(int i=0; i<term_syn_ids.size(); i++)
                         {
-                            out.println("IN TERM_SYN_IDS FOR LOOP " +i);
-                            out.println("Id is " +term_syn_ids.get(i));
-                            out.println("Target language id is " +targ_lang);
+                            //out.println("IN TERM_SYN_IDS FOR LOOP " +i);
+                            //out.println("Id is " +term_syn_ids.get(i));
+                            //out.println("Target language id is " +targ_lang);
 
 
                             rs_trans_syn_ids = t.getTranslationID(term_syn_ids.get(i),targ_lang);
@@ -424,7 +428,7 @@
                             {
                                 source_id = rs_trans_syn_ids.getLong("src_term_id");
                                 target_id = rs_trans_syn_ids.getLong("targ_term_id");
-                                out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
+                                //out.println(" SOURCE TERM ID IS " +source_id + "TARGET TERM ID IS "+target_id);
                                 translation_syn_ids.put(source_id, target_id);
 
                             }
@@ -442,7 +446,7 @@
 
                                 if(term_syn_ids.get(0)==entry.getKey()){
 
-                                    out.println("translation_syn_ids...key is :" + entry.getKey() + "  value is :" + entry.getValue());
+                                    //out.println("translation_syn_ids...key is :" + entry.getKey() + "  value is :" + entry.getValue());
                                     rs_trans_syn = t.getTranslation(entry.getKey(), entry.getValue());
 
                                     while(rs_trans_syn.next())
@@ -480,7 +484,8 @@
                             translation_syn_ids.clear();
                         }
                     }
-                }//
+                }
+                
                 
              
             %>
